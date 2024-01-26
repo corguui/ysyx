@@ -7,7 +7,6 @@
 
 #define ARRLEN(arr) (int)(sizeof(arr) / sizeof(arr[0])) 
 
-static int cmd_help(char *args);
 
 static char* rl_gets() {
   static char *line_read = NULL;
@@ -34,8 +33,22 @@ static int cmd_c(char *args) {
 
 
 static int cmd_q(char *args) {
+  npc_state.state=NPC_QUIT;
   return -1;
 }
+
+static int cmd_help(char *args);
+
+static int cmd_si(char *args){
+  int count;
+  if(args==NULL)
+  count=1;
+  else
+  count=atoi(args);
+  cpu_exec(count);
+  return 0;
+}
+
 
 
 
@@ -48,7 +61,7 @@ static struct {
   { "help", "Display information about all supported commands", cmd_help },
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NPC", cmd_q },
-
+  {"si", "execute N row (default value:1)", cmd_si },
   /* TODO: Add more commands */
 
 };

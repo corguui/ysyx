@@ -47,6 +47,7 @@ VM_USER_CLASSES = \
 	cpu \
 	main \
 	mem \
+	monitor \
 	sdb \
 	log \
 	logo \
@@ -56,6 +57,7 @@ VM_USER_CLASSES = \
 VM_USER_DIR = \
 	csrc \
 	csrc/cpu \
+	csrc/monitor \
 	csrc/monitor/sdb \
 	csrc/utils \
 
@@ -74,6 +76,8 @@ cpu.o: csrc/cpu/cpu.c
 main.o: csrc/main.cpp
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST) -c -o $@ $<
 mem.o: csrc/mem.cpp
+	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST) -c -o $@ $<
+monitor.o: csrc/monitor/monitor.c
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST) -c -o $@ $<
 sdb.o: csrc/monitor/sdb/sdb.c
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST) -c -o $@ $<

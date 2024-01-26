@@ -1,13 +1,14 @@
 #include<stdio.h>
 #include"svdpi.h"
 
-#include <mem.h>
 #include <cpu/cpu.h>
 #include <sdb.h>
 
 VerilatedContext* contextp=NULL; 
 Vysyx_23060111_top *top=NULL; 
 VerilatedVcdC* tfp=NULL;
+
+void init_monitor();
 
 int main_time=0;
 
@@ -23,8 +24,8 @@ int main(int argc ,char** argv, char** env)
 	top->trace(tfp,0);
 	tfp->open("wave.vcd");
 
-	//init mem
-	init_mem();
+	//init_monitor
+	init_monitor();
 
 	//init cpu
 	cpu_init();
