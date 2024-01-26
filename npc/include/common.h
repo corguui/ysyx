@@ -7,4 +7,6 @@
 #include <stdlib.h>
 #include<cstdint>
 
+#include<config.h>
+
 #endif
