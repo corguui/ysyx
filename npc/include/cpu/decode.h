@@ -2,24 +2,14 @@
 #define __CPU_DECODE_H__
 
 #include <common.h>
-#define __GUEST_ISA__ "riscv32"
-
-typedef concat(__GUEST_ISA__, _ISADecodeInfo) ISADecodeInfo;
+#include <isa.h>
 
 typedef struct Decode { 
   uint32_t pc;
   uint32_t snpc; // static next pc
   uint32_t dnpc; // dynamic next pc
-  ISADecodeInfo isa;    
+  uint32_t inst;    
   IFDEF(CONFIG_ITRACE, char logbuf[128]);
 } Decode;
-
-
-typedef struct{
-  union{
-    uint32_t val;
-  }inst;
-} riscv32_ISADecodeInfo;
-
 
 #endif

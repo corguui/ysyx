@@ -180,7 +180,6 @@ if(pc!=0x80000000)
   p += space_len;
   //itrace the wrong instruct
   iringbuf_put_char(s->logbuf);
-
 #ifndef CONFIG_ISA_loongarch32r
   void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
   disassemble(p, s->logbuf + sizeof(s->logbuf) - p,

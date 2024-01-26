@@ -1,6 +1,8 @@
 #include <cpu/cpu.h>
 #include <cstdint>
 #include <cpu/decode.h>
+#include<common.h>
+extern "C" void disassemble(char *str, int size, uint64_t pc, uint8_t *code,int nbyte);
 
 static bool g_print_step = false;  
 
@@ -43,9 +45,9 @@ void cpu_exec_once(VerilatedVcdC* tfp,Decode *s)
 {
 
 		top->clk =0; top->eval();
-		top->inst =pc_read(top->pc);
-		s->isa.inst.val=top->inst;
 		s->pc=top->pc;
+		top->inst =pc_read(top->pc);
+		s->inst=top->inst;
 		tfp->dump(main_time);
 		main_time++;
 		top->eval();
@@ -57,9 +59,9 @@ void cpu_exec_once(VerilatedVcdC* tfp,Decode *s)
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
   p += snprintf(p, sizeof(s->logbuf),  "0x%x:", s->pc);
-  int ilen = s->snpc - s->pc;
+ int ilen = 0x4;
   int i;
-  uint8_t *inst = (uint8_t *)&s->isa.inst.val;
+  uint8_t *inst = (uint8_t *)&s->inst;
   for (i = ilen - 1; i >= 0; i --) {
     p += snprintf(p, 4, " %02x", inst[i]);
   }
@@ -70,7 +72,9 @@ void cpu_exec_once(VerilatedVcdC* tfp,Decode *s)
   space_len = space_len * 3 + 1;
   memset(p, ' ', space_len);
   p += space_len;
-  p[0] = '\0'; // the upstream llvm does not support loongarch32r
+  //p[0] = '\0'; // the upstream llvm does not support loongarch32r
+  disassemble(p, s->logbuf + sizeof(s->logbuf) - p,s->pc, (uint8_t *)&s->inst, ilen);
+
 #endif
 
 }
@@ -99,10 +103,6 @@ void cpu_exec(uint64_t n)
      case NPC_RUNNING: npc_state.state =NPC_STOP;break;
 
      case NPC_END: case NPC_ABORT:
-     /*
-     printf("npc: %s at pc = 0x%x\n",
-     (npc_state.state == NPC_ABORT ? ANSI_FMT("ABORT", ANSI_FG_RED) :           (npc_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) :        ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED)))  ,top->pc);  
-     */
 
       Log("npc: %s at pc = 0x%x",
           (npc_state.state == NPC_ABORT ? ANSI_FMT("ABORT", ANSI_FG_RED) :
