@@ -2,9 +2,9 @@
 #define __CPU_DECODE_H__
 
 #include <common.h>
+#define __GUEST_ISA__ "riscv32"
 
-typedef concat(riscv32, _ISADecodeInfo) ISADecodeInfo;
-
+typedef concat(__GUEST_ISA__, _ISADecodeInfo) ISADecodeInfo;
 
 typedef struct Decode { 
   uint32_t pc;
@@ -13,6 +13,7 @@ typedef struct Decode {
   ISADecodeInfo isa;    
   IFDEF(CONFIG_ITRACE, char logbuf[128]);
 } Decode;
+
 
 typedef struct{
   union{
