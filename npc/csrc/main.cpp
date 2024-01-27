@@ -1,5 +1,5 @@
 #include<stdio.h>
-#include"svdpi.h"
+//#include"svdpi.h"
 
 #include <cpu/cpu.h>
 #include <sdb.h>
