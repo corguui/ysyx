@@ -112,8 +112,6 @@ VL_ATTR_COLD void Vysyx_23060111_top___024root___stl_sequent__TOP__0(Vysyx_23060
     QData/*32:0*/ __VdfgTmp_h2287e566__0;
     __VdfgTmp_h2287e566__0 = 0;
     // Body
-    vlSelf->halt_ret = vlSelf->ysyx_23060111_top__DOT__reg___0240__DOT__rf
-        [0xaU];
     vlSelf->ysyx_23060111_top__DOT__init_IDU__DOT____Vcellinp__typeMux____pinNumber4[0U] = 0U;
     vlSelf->ysyx_23060111_top__DOT__init_IDU__DOT____Vcellinp__typeMux____pinNumber4[1U] = 0x46cU;
     vlSelf->ysyx_23060111_top__DOT__init_IDU__DOT____Vcellinp__typeMux____pinNumber4[2U] 
@@ -373,7 +371,6 @@ VL_ATTR_COLD void Vysyx_23060111_top___024root___ctor_var_reset(Vysyx_23060111_t
     vlSelf->clk = VL_RAND_RESET_I(1);
     vlSelf->inst = VL_RAND_RESET_I(32);
     vlSelf->pc = VL_RAND_RESET_I(32);
-    vlSelf->halt_ret = VL_RAND_RESET_I(32);
     vlSelf->inv_flag = VL_RAND_RESET_I(1);
     vlSelf->ysyx_23060111_top__DOT__dnpc = VL_RAND_RESET_I(32);
     vlSelf->ysyx_23060111_top__DOT__type_i = VL_RAND_RESET_I(4);

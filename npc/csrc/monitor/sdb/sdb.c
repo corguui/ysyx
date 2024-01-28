@@ -7,6 +7,7 @@
 
 #define ARRLEN(arr) (int)(sizeof(arr) / sizeof(arr[0])) 
 
+void isa_reg_display();
 
 static char* rl_gets() {
   static char *line_read = NULL;
@@ -45,11 +46,20 @@ static int cmd_si(char *args){
   count=1;
   else
   count=atoi(args);
+
   cpu_exec(count);
   return 0;
 }
 
-
+static int cmd_info(char *args) {
+  if(args==NULL)
+  printf("default\n");
+  else if(strcmp(args,"r")==0)
+  isa_reg_display();
+  //else if(strcmp(args,"w")==0)
+  //watchpoint_display();
+  return 0;
+}
 
 
 
@@ -62,6 +72,7 @@ static struct {
   { "c", "Continue the execution of the program", cmd_c },
   { "q", "Exit NPC", cmd_q },
   {"si", "execute N row (default value:1)", cmd_si },
+  {"info"," [r] print the rg state [w] print the monitoring points", cmd_info},
   /* TODO: Add more commands */
 
 };

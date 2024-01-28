@@ -8,7 +8,7 @@ extern "C" void init_disasm(const char *triple);
 
 void init_monitor() {
 
-        init_log();
+    init_log();
 
 	init_mem();
 

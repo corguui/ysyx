@@ -15,6 +15,7 @@ READLINE = -LDFLAGS -lreadline
 
 INC_PATH = $(HOME)/ysyx-workbench/npc/include
 
+
 all:
 	@echo "Write this Makefile by your self."
 

@@ -3,6 +3,7 @@
 
 #include <cpu/cpu.h>
 #include <sdb.h>
+#include "Vysyx_23060111_top___024root.h"
 
 VerilatedContext* contextp=NULL; 
 Vysyx_23060111_top *top=NULL; 
@@ -39,7 +40,7 @@ void ebreak (int inst)
 {
 	if(inst == 0x00100073 )
 	{
-	   NPCTRAP(top->halt_ret);
+	   NPCTRAP(top->rootp->ysyx_23060111_top__DOT__reg___0240__DOT__rf[10]);
 	}
 	if(inst!=0&&top->inv_flag==1)
 	{

@@ -93,21 +93,20 @@ void Vysyx_23060111_top___024root__trace_chg_sub_0(Vysyx_23060111_top___024root*
     bufp->chgBit(oldp+85,(vlSelf->clk));
     bufp->chgIData(oldp+86,(vlSelf->inst),32);
     bufp->chgIData(oldp+87,(vlSelf->pc),32);
-    bufp->chgIData(oldp+88,(vlSelf->halt_ret),32);
-    bufp->chgBit(oldp+89,(vlSelf->inv_flag));
-    bufp->chgIData(oldp+90,(vlSelf->ysyx_23060111_top__DOT__dnpc),32);
-    bufp->chgIData(oldp+91,(((IData)(4U) + vlSelf->pc)),32);
-    bufp->chgCData(oldp+92,((0x7fU & vlSelf->inst)),7);
-    bufp->chgCData(oldp+93,((0x1fU & (vlSelf->inst 
+    bufp->chgBit(oldp+88,(vlSelf->inv_flag));
+    bufp->chgIData(oldp+89,(vlSelf->ysyx_23060111_top__DOT__dnpc),32);
+    bufp->chgIData(oldp+90,(((IData)(4U) + vlSelf->pc)),32);
+    bufp->chgCData(oldp+91,((0x7fU & vlSelf->inst)),7);
+    bufp->chgCData(oldp+92,((0x1fU & (vlSelf->inst 
                                       >> 7U))),5);
-    bufp->chgCData(oldp+94,((7U & (vlSelf->inst >> 0xcU))),3);
-    bufp->chgCData(oldp+95,((0x1fU & (vlSelf->inst 
+    bufp->chgCData(oldp+93,((7U & (vlSelf->inst >> 0xcU))),3);
+    bufp->chgCData(oldp+94,((0x1fU & (vlSelf->inst 
                                       >> 0xfU))),5);
-    bufp->chgCData(oldp+96,((0x1fU & (vlSelf->inst 
+    bufp->chgCData(oldp+95,((0x1fU & (vlSelf->inst 
                                       >> 0x14U))),5);
-    bufp->chgCData(oldp+97,((vlSelf->inst >> 0x19U)),7);
-    bufp->chgIData(oldp+98,(vlSelf->ysyx_23060111_top__DOT__wdata),32);
-    bufp->chgIData(oldp+99,(vlSelf->ysyx_23060111_top__DOT__rout),32);
+    bufp->chgCData(oldp+96,((vlSelf->inst >> 0x19U)),7);
+    bufp->chgIData(oldp+97,(vlSelf->ysyx_23060111_top__DOT__wdata),32);
+    bufp->chgIData(oldp+98,(vlSelf->ysyx_23060111_top__DOT__rout),32);
 }
 
 void Vysyx_23060111_top___024root__trace_cleanup(void* voidSelf, VerilatedVcd* /*unused*/) {
