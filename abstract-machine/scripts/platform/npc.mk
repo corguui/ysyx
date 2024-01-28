@@ -21,5 +21,8 @@ image: $(IMAGE).elf
 	@echo + OBJCOPY "->" $(IMAGE_REL).bin
 	@$(OBJCOPY) -S --set-section-flags .bss=alloc,contents -O binary $(IMAGE).elf $(IMAGE).bin
 
+gdb: image
+	$(MAKE) -C $(NPC_HOME) gdb IMG=$(IMAGE).bin
+
 run: image
 	$(MAKE) -C $(NPC_HOME)  sim IMG=$(IMAGE).bin

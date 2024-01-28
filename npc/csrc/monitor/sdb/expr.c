@@ -1,39 +1,25 @@
-/***************************************************************************************
-* Copyright (c) 2014-2022 Zihao Yu, Nanjing University
-*
-* NEMU is licensed under Mulan PSL v2.
-* You can use this software according to the terms and conditions of the Mulan PSL v2.
-* You may obtain a copy of Mulan PSL v2 at:
-*          http://license.coscl.org.cn/MulanPSL2
-*
-* THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND,
-* EITHER EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT,
-* MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
-*
-* See the Mulan PSL v2 for more details.
-***************************************************************************************/
-
-
 #include<stdio.h>
 #include<stdbool.h>
 #include<assert.h>
 #include<stdint.h>
 #include<stdlib.h>
 #include<string.h>
+#include<common.h>
 bool check_parentheses(int p, int q);
 uint32_t eval(int p , int q);
 int char_to_int(char s[]);
 void int_to_char(int x,char str[]);
+uint32_t isa_reg_str2val(const char *s, bool *success);
 int flat_HEX=0;
 #define max(a,b) (((a)>(b))?(a):(b))
-
-
-#include <isa.h>
+#define ARRLEN(arr) (int)(sizeof(arr) / sizeof(arr[0])) 
 
 /* We use the POSIX regex functions to process regular expressions.
  * Type 'man regex' for more information about POSIX regex functions.
  */
+
 #include <regex.h>
+
 
 enum {
   TK_NOTYPE = 256,EQ,Num,LEQ,NOTEQ,OR,AND,RESGISTER,HEX,
@@ -87,7 +73,8 @@ void init_regex() {
     ret = regcomp(&re[i], rules[i].regex, REG_EXTENDED);
     if (ret != 0) {
       regerror(ret, &re[i], error_msg, 128);
-      panic("regex compilation failed: %s\n%s", error_msg, rules[i].regex);
+      printf("regex compilation failed: %s\n%s", error_msg, rules[i].regex);
+      assert(0);
     }
   }
 }
@@ -124,7 +111,7 @@ static bool make_token(char *e) {
          * of tokens, some extra actions should be performed.
          */
 
-        switch (rules[i].token_type) {
+    switch (rules[i].token_type) {
 	  case '+':
 	  case '-':
 	  case ')':
@@ -147,11 +134,12 @@ static bool make_token(char *e) {
 		break;
 	  case TK_NOTYPE :break;
 
-          default: TODO();
+          default: assert(0); 
         }
           if(nr_token==32)
 	  {
-	     Assert(0,"the tokens full");
+         printf("the tokens full");
+	     assert(0);
 	  }
         break;
       }
@@ -168,7 +156,7 @@ static bool make_token(char *e) {
 }
 
 
-word_t expr(char *e, bool *success) {
+uint32_t expr(char *e, bool *success) {
   if (!make_token(e)) {
     *success = false;
     return 0;
@@ -422,8 +410,6 @@ uint32_t eval(int p, int q) {
         }
     }
 }
-
-
 int char_to_int(char s[]){
     int s_size = strlen(s);
     int res = 0 ;
@@ -455,4 +441,3 @@ void int_to_char(int x, char str[]){
 	str[tmp_index ++] = a + '0';
     }
 }
-

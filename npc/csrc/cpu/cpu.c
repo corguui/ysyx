@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <cpu/decode.h>
 #include<common.h>
+#include <sdb.h>
 extern "C" void disassemble(char *str, int size, uint64_t pc, uint8_t *code,int nbyte);
 
 static bool g_print_step = false;  
@@ -13,7 +14,6 @@ static void trace_and_difftest(Decode *_this) {
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   //IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 
-#ifdef CONFIG_CC_WATCHPOINT
 
   if(check_wp()!=true)
   {
@@ -21,7 +21,6 @@ static void trace_and_difftest(Decode *_this) {
   printf("error the npc stop\n");
   return ;
   }
-#endif
 }
 
 

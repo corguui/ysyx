@@ -1,12 +1,14 @@
 #include <cpu/cpu.h>
+#include <cstdint>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <sdb.h>
 
 #define ARRLEN(arr) (int)(sizeof(arr) / sizeof(arr[0])) 
-
+extern int flat_HEX;
 void isa_reg_display();
 
 static char* rl_gets() {
@@ -56,12 +58,60 @@ static int cmd_info(char *args) {
   printf("default\n");
   else if(strcmp(args,"r")==0)
   isa_reg_display();
-  //else if(strcmp(args,"w")==0)
-  //watchpoint_display();
+  else if(strcmp(args,"w")==0)
+  watchpoint_display();
   return 0;
 }
 
 
+static int cmd_x(char *args)
+{
+  char  *ch1;
+  char *EXPR;
+  int num;
+  uint32_t addr;
+  if(args==NULL)
+  printf("default\n");
+  else
+  {
+  ch1=strtok(args," ");
+  EXPR=strtok(NULL," ");
+  num=atoi(ch1);
+  sscanf(EXPR,"%x",&addr);
+  int i;
+  for(i=0;i<num;i++)
+  {
+	printf("0x%08x\n",pmem_read(addr,4));
+	addr=addr+4;
+  }
+  }
+  return 0;
+}
+static int cmd_p(char *args)
+{
+  if(args==NULL)
+  {
+    printf("Please input the <exper>\n");
+    return 0;
+  }
+
+  bool success=true;
+  uint32_t num=expr(args,&success);
+  if(success==false){
+  printf("Worng expression\n");
+  }
+  else
+  {
+  if(flat_HEX)
+	printf("0x%x\n",num);
+	else
+	printf("%u\n",num);
+	flat_HEX=0;
+  }
+
+
+  return 0;
+}
 
 static struct {
   const char *name;
@@ -73,6 +123,8 @@ static struct {
   { "q", "Exit NPC", cmd_q },
   {"si", "execute N row (default value:1)", cmd_si },
   {"info"," [r] print the rg state [w] print the monitoring points", cmd_info},
+  {"x"," format: x [N] [EXPR], [N] print N*4bytes(hexadecimal) [EXPR] get [EXPR] value as the start memory", cmd_x},
+  {"p", "print the result of your input <exper>", cmd_p},
   /* TODO: Add more commands */
 
 };
@@ -144,3 +196,12 @@ void sdb_mainloop() {
     if (i == NR_CMD) { printf("Unknown command '%s'\n", cmd); }
   }
 }
+void init_sdb() {
+  /* Compile the regular expressions. */
+  init_regex();
+
+  /* Initialize the watchpoint pool. */
+  init_wp_pool();
+}
+
+
