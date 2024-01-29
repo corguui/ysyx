@@ -3,13 +3,14 @@
 #include <cpu/decode.h>
 #include<common.h>
 #include <sdb.h>
+#include <stdio.h>
 #include "Vysyx_23060111_top___024root.h"
 extern "C" void disassemble(char *str, int size, uint64_t pc, uint8_t *code,int nbyte);
 
 #ifdef CONFIG_FTRACE
 #include <monitor.h>
-extern FUN fun_buff[128];
-extern int fun_num;
+extern FUN *symbol;
+extern int func_num;
 int space_num=-1;
 int space_flat=0;
 #endif
@@ -66,7 +67,6 @@ void cpu_exec_once(VerilatedVcdC* tfp,Decode *s)
 		top->clk =0; top->eval();
 		s->pc=top->pc;
 		top->inst =pc_read(top->pc);
-    s->dnpc=top->rootp->ysyx_23060111_top__DOT__dnpc;
 		s->inst=top->inst;
 		tfp->dump(main_time);
 		main_time++;
@@ -74,82 +74,10 @@ void cpu_exec_once(VerilatedVcdC* tfp,Decode *s)
 		top->clk =1; top->eval();
 		tfp->dump(main_time);
 		main_time++;
+    	s->dnpc=top->rootp->ysyx_23060111_top__DOT__dnpc;
 		top->eval();
 
-#ifdef CONFIG_FTRACE
-  char ar[]="jal";//read the jal and jalr
-  char ar1[]="jalr";
-  char ar2[]="00 00 80 67";//funbuf 0x8--------: 00 00 80 67 jalr  ..... the ret is 80 67
-  //00 07 80 67 jr mean call to but no printf the ret//in f1 have jr call to f0 the f1 no ret
-  char *q = s->funbuf;
-  q += snprintf(q, sizeof(s->funbuf), "0x%x:", s->pc);
-  int funlen = 0x4;
-  int j;
-  uint8_t *funinst = (uint8_t *)&s->inst;
-  for (j = funlen - 1; j >= 0; j --) {
-    q += snprintf(q, 4, " %02x", funinst[j]);
-  }
 
-  int funlen_max = 4;
-  int fspace_len = funlen_max - funlen;
-  if (fspace_len < 0) fspace_len = 0;
-  fspace_len = fspace_len * 3 + 1;
-  memset(q, ' ', fspace_len);
-  q += fspace_len;
-  disassemble(q, s->funbuf + sizeof(s->funbuf) - q,s->pc, (uint8_t *)&s->inst, funlen);
-
-if(strncmp(s->funbuf+24,ar,3)==0)
- {
- 	int flat_ret=0;
-	int f,g;
- 	for(g=0;g<fun_num;g++)
-	{
-		
-		if(s->dnpc>=fun_buff[g].value&&s->dnpc<fun_buff[g].value+fun_buff[g].size)//read the next pc
-		{
-		   if(strncmp(s->funbuf+24,ar1,4)==0&&strncmp(s->funbuf+12,ar2,5)==0)//ret or not ret 
-		   {
-		   for(f=0;f<fun_num;f++)
-		   {
-		       if(s->pc>=fun_buff[f].value&&s->pc<fun_buff[f].size+fun_buff[f].value)	
-		       {
-		          flat_ret=1;
-			  break;
-		       }
-		   }
-		   }
-		   if(flat_ret==1)//ret
-		   {
-		     if(space_flat==1)
-		     {
-		     	space_num--;
-		     }
-		     printf("0x%x:",s->pc);
-		     printf("---num: %d   ret [fun:%s  @%x]\n",space_num,fun_buff[f].name,fun_buff[f].value); 
-		     space_flat=1;
-		     break;
-		   }
-		   else if(flat_ret==0)//call
-		   {
-		     if(space_flat==0)
-		     {
-		     	space_num++;
-		     }
-		     printf("0x%x:",s->pc);
-		     printf("---num: %d  call [fun:%s  @%x]\n",space_num,fun_buff[g].name,fun_buff[g].value);
-			space_flat=0;
-			break;
-		   }
-		}
-		else if(g==fun_num-1)
-		{
-			Log("error no funcion\nsrc/cpu/cpu-exec.c:1:error\n");
-      
-			
-		}
-	}
- }
-#endif
 
 
 #ifdef CONFIG_ITRACE
@@ -174,9 +102,80 @@ if(strncmp(s->funbuf+24,ar,3)==0)
   #endif
   //p[0] = '\0'; // the upstream llvm does not support loongarch32r
   disassemble(p, s->logbuf + sizeof(s->logbuf) - p,s->pc, (uint8_t *)&s->inst, ilen);
-
 #endif
 
+#ifdef CONFIG_FTRACE
+  char ar[]="jal";//read the jal and jalr
+  char ar1[]="jalr";
+  char ar2[]="00 00 80 67";//funbuf 0x8--------: 00 00 80 67 jalr  ..... the ret is 80 67
+  //00 07 80 67 jr mean call to but no printf the ret//in f1 have jr call to f0 the f1 no ret
+  char *q = s->funbuf;
+  q += snprintf(q, sizeof(s->funbuf), "0x%x:", s->pc);
+  int funlen = 0x4;
+  int j;
+  uint8_t *funinst = (uint8_t *)&s->inst;
+  for (j = funlen - 1; j >= 0; j --) {
+    q += snprintf(q, 4, " %02x", funinst[j]);
+  }
+
+  int funlen_max = 4;
+  int fspace_len = funlen_max - funlen;
+  if (fspace_len < 0) fspace_len = 0;
+  fspace_len = fspace_len * 3 + 1;
+  memset(q, ' ', fspace_len);
+  q += fspace_len;
+  disassemble(q, s->funbuf + sizeof(s->funbuf) - q,s->pc, (uint8_t *)&s->inst, funlen);
+if(strncmp(s->funbuf+24,ar,3)==0)
+ {
+ 	int flat_ret=0;
+	int f,g;
+ 	for(g=0;g<func_num;g++)
+	{
+		if(s->dnpc>=symbol[g].value&&s->dnpc<symbol[g].value+symbol[g].size)//read the next pc
+		{
+		   if(strncmp(s->funbuf+24,ar1,4)==0&&strncmp(s->funbuf+12,ar2,5)==0)//ret or not ret 
+		   {
+		   for(f=0;f<func_num;f++)
+		   {
+		       if(s->pc>=symbol[f].value&&s->pc<symbol[f].size+symbol[f].value)	
+		       {
+		          flat_ret=1;
+			  break;
+		       }
+		   }
+		   }
+		   if(flat_ret==1)//ret
+		   {
+		     if(space_flat==1)
+		     {
+		     	space_num--;
+		     }
+		     printf("0x%x:",s->pc);
+		     printf("---num: %d   ret [fun:%s  @%x]\n",space_num,symbol[f].name,symbol[f].value); 
+		     space_flat=1;
+		     break;
+		   }
+		   else if(flat_ret==0)//call
+		   {
+		     if(space_flat==0)
+		     {
+		     	space_num++;
+		     }
+		     printf("0x%x:",s->pc);
+		     printf("---num: %d  call [fun:%s  @%x]\n",space_num,symbol[g].name,symbol[g].value);
+			space_flat=0;
+			break;
+		   }
+		}
+		else if(g==func_num-1)
+		{
+			Log("error no funcion error\n");
+      
+			
+		}
+	}
+ }
+#endif
 }
 
 static void execute(uint64_t n)
