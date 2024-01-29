@@ -287,9 +287,9 @@ void elf_read_fun(char *elf_file) {
 	assert(ret2==1);
 
 	int dynsym_ind = -1;//默认.dynsym符号表索引为-1
-    	int symtab_ind = -1;//默认.symtab符号表索引为-1
-    	int dynstr_ind = -1;//默认.dynstr字符串表索引为-1
-    	int strtab_ind = -1;//默认.strtab字符串索引为-1
+  int symtab_ind = -1;//默认.symtab符号表索引为-1
+  int dynstr_ind = -1;//默认.dynstr字符串表索引为-1
+  int strtab_ind = -1;//默认.strtab字符串索引为-1
 
     //遍历段表section_headers获取符号表.dynsym;.symtab;.dynstr;.strtab四张表在段表中的索引
     	for (int i = 0; i < elf_header.e_shnum; i++) {
@@ -318,7 +318,7 @@ void elf_read_fun(char *elf_file) {
 
 
 	fseek(fp, sec_headers[dynsym_ind].sh_offset, SEEK_SET);//将指针移动到符号表对应的偏移地址
-
+	
         Elf32_Sym* sym_entries = (Elf32_Sym*)malloc(sizeof(Elf32_Sym)*entry_num);//开辟堆内存用来存储符号表中所有entry
         int ret3=fread(sym_entries, sizeof(Elf64_Sym)*entry_num,1, fp);//读符号表
 	assert(ret3==1);
@@ -360,11 +360,11 @@ void elf_read_fun(char *elf_file) {
         int ret5=fread(strtab_string_table, sec_headers[strtab_ind].sh_size,1, fp);
 	assert(ret5==1);
 
-
+  printf("%d\n",sec_headers[symtab_ind].sh_offset);
 	fseek(fp, sec_headers[symtab_ind].sh_offset, SEEK_SET);//将指针移动到符号表对应的偏移地址
 
         Elf32_Sym* sym_entries = (Elf32_Sym*)malloc(sizeof(Elf32_Sym)*entry_num);//开辟堆内存用来存储符号表中所有entry
-        int ret3=fread(sym_entries, sizeof(Elf64_Sym)*entry_num,1, fp);//读符号表
+        int ret3=fread(sym_entries, sizeof(Elf32_Sym)*entry_num,1, fp);//读符号表
 	assert(ret3==1);
 
 

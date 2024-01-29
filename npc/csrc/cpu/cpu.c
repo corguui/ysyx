@@ -3,7 +3,27 @@
 #include <cpu/decode.h>
 #include<common.h>
 #include <sdb.h>
+#include "Vysyx_23060111_top___024root.h"
 extern "C" void disassemble(char *str, int size, uint64_t pc, uint8_t *code,int nbyte);
+
+#ifdef CONFIG_FTRACE
+#include <monitor.h>
+extern FUN fun_buff[128];
+extern int fun_num;
+int space_num=-1;
+int space_flat=0;
+#endif
+
+
+//ringbuf val
+#ifdef CONFIG_ITRACE
+#define BUF_LEN 18
+#define NEXT_POS(x) ((x+1)%BUF_LEN)
+char ringbuf[BUF_LEN][128];
+int w=0;//ringbuf's write flag
+void iringbuf_put_char(char *p);
+void print_ringbuf();
+#endif
 
 static bool g_print_step = false;  
 
@@ -14,7 +34,7 @@ static void trace_and_difftest(Decode *_this) {
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   //IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
 
-
+//watchpoint
   if(check_wp()!=true)
   {
   npc_state.state=NPC_STOP;
@@ -46,6 +66,7 @@ void cpu_exec_once(VerilatedVcdC* tfp,Decode *s)
 		top->clk =0; top->eval();
 		s->pc=top->pc;
 		top->inst =pc_read(top->pc);
+    s->dnpc=top->rootp->ysyx_23060111_top__DOT__dnpc;
 		s->inst=top->inst;
 		tfp->dump(main_time);
 		main_time++;
@@ -54,6 +75,82 @@ void cpu_exec_once(VerilatedVcdC* tfp,Decode *s)
 		tfp->dump(main_time);
 		main_time++;
 		top->eval();
+
+#ifdef CONFIG_FTRACE
+  char ar[]="jal";//read the jal and jalr
+  char ar1[]="jalr";
+  char ar2[]="00 00 80 67";//funbuf 0x8--------: 00 00 80 67 jalr  ..... the ret is 80 67
+  //00 07 80 67 jr mean call to but no printf the ret//in f1 have jr call to f0 the f1 no ret
+  char *q = s->funbuf;
+  q += snprintf(q, sizeof(s->funbuf), "0x%x:", s->pc);
+  int funlen = 0x4;
+  int j;
+  uint8_t *funinst = (uint8_t *)&s->inst;
+  for (j = funlen - 1; j >= 0; j --) {
+    q += snprintf(q, 4, " %02x", funinst[j]);
+  }
+
+  int funlen_max = 4;
+  int fspace_len = funlen_max - funlen;
+  if (fspace_len < 0) fspace_len = 0;
+  fspace_len = fspace_len * 3 + 1;
+  memset(q, ' ', fspace_len);
+  q += fspace_len;
+  disassemble(q, s->funbuf + sizeof(s->funbuf) - q,s->pc, (uint8_t *)&s->inst, funlen);
+
+if(strncmp(s->funbuf+24,ar,3)==0)
+ {
+ 	int flat_ret=0;
+	int f,g;
+ 	for(g=0;g<fun_num;g++)
+	{
+		
+		if(s->dnpc>=fun_buff[g].value&&s->dnpc<fun_buff[g].value+fun_buff[g].size)//read the next pc
+		{
+		   if(strncmp(s->funbuf+24,ar1,4)==0&&strncmp(s->funbuf+12,ar2,5)==0)//ret or not ret 
+		   {
+		   for(f=0;f<fun_num;f++)
+		   {
+		       if(s->pc>=fun_buff[f].value&&s->pc<fun_buff[f].size+fun_buff[f].value)	
+		       {
+		          flat_ret=1;
+			  break;
+		       }
+		   }
+		   }
+		   if(flat_ret==1)//ret
+		   {
+		     if(space_flat==1)
+		     {
+		     	space_num--;
+		     }
+		     printf("0x%x:",s->pc);
+		     printf("---num: %d   ret [fun:%s  @%x]\n",space_num,fun_buff[f].name,fun_buff[f].value); 
+		     space_flat=1;
+		     break;
+		   }
+		   else if(flat_ret==0)//call
+		   {
+		     if(space_flat==0)
+		     {
+		     	space_num++;
+		     }
+		     printf("0x%x:",s->pc);
+		     printf("---num: %d  call [fun:%s  @%x]\n",space_num,fun_buff[g].name,fun_buff[g].value);
+			space_flat=0;
+			break;
+		   }
+		}
+		else if(g==fun_num-1)
+		{
+			Log("error no funcion\nsrc/cpu/cpu-exec.c:1:error\n");
+      
+			
+		}
+	}
+ }
+#endif
+
 
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
@@ -71,6 +168,10 @@ void cpu_exec_once(VerilatedVcdC* tfp,Decode *s)
   space_len = space_len * 3 + 1;
   memset(p, ' ', space_len);
   p += space_len;
+  #ifdef CONFIG_ITRACE
+  //itrace the wrong instruct
+  iringbuf_put_char(s->logbuf);
+  #endif
   //p[0] = '\0'; // the upstream llvm does not support loongarch32r
   disassemble(p, s->logbuf + sizeof(s->logbuf) - p,s->pc, (uint8_t *)&s->inst, ilen);
 
@@ -106,8 +207,38 @@ void cpu_exec(uint64_t n)
       Log("npc: %s at pc = 0x%x",
           (npc_state.state == NPC_ABORT ? ANSI_FMT("ABORT", ANSI_FG_RED) :
            (npc_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) :  ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED))), top->pc);
-     }
+
+      #ifdef CONFIG_ITRACE
+	    //print the ringbuf
+	    if(npc_state.halt_ret !=0)
+	    print_ringbuf();
+	    else if(npc_state.state==NPC_ABORT)
+	    print_ringbuf();
+	    #endif
+    }
+
 
 }
 
+#ifdef CONFIG_ITRACE
+void iringbuf_put_char(char *p)
+{
+		int n=sizeof(ringbuf[w]);
+		memset(ringbuf[w],'\0',n);
+		strcpy(ringbuf[w],p);
+		w=NEXT_POS(w);
+
+}
+
+void print_ringbuf(){
+	for(int num=0;num<BUF_LEN;num++)
+		{
+			if((num!=w-1)&&(ringbuf[num]!=NULL))
+			printf("    %s\n",ringbuf[num]);
+			else
+			printf("--> %s\n",ringbuf[num]);
+		}
+
+}
+#endif
 
