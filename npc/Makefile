@@ -15,12 +15,12 @@ READLINE = -LDFLAGS -lreadline
 
 LIB_PATH = $(HOME)/ysyx-workbench/nemu/build/
 LIB = $(HOME)/ysyx-workbench/nemu/build/riscv32-nemu-interpreter-so
-NPC_LIB =  -CFLAGS -L$(LIB_PATH) -CFLAGS -lriscv32-nemu-interpreter-so -CFLAGS -DDIFF='\"$(LIB)\"'
+NPC_LIB =  -CFLAGS -L$(LIB_PATH) -CFLAGS -lriscv32-nemu-interpreter-so -CFLAGS -DNPC_DIFF='\"$(LIB)\"'
 
 
 INC_PATH = $(HOME)/ysyx-workbench/npc/include
 NPC_INC = -CFLAGS -I$(INC_PATH) 
-NPC_DEF = -CFLAGS -DIMG='\"$(IMG)\"' -CFLAGS -DELF='\"$(ELF)\"'
+NPC_DEF = -CFLAGS -DNPC_IMG='\"$(IMG)\"' -CFLAGS -DNPC_ELF='\"$(ELF)\"'
 NPC_GDB = -CFLAGS -g 
 
 all:

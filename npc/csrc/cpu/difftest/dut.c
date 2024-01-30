@@ -3,12 +3,20 @@
 #include <mem.h>
 #include <utils.h>
 
+#ifdef CONFIG_DIFFTEST
 void (*ref_difftest_memcpy)(uint32_t addr, void *buf, size_t n, bool direction) = NULL;
-void (*ref_difftest_regcpy)(void *dut, bool direction) = NULL;
+void (*ref_difftest_regcpy)(void *dut,uint32_t*pc, bool direction) = NULL;
 void (*ref_difftest_exec)(uint64_t n) = NULL;
 void (*ref_difftest_raise_intr)(uint64_t NO) = NULL;
+void (*ref_difftest_init)(int port) = NULL;
 
-#ifdef CONFIG_DIFFTEST
+void isa_reg_display();
+static void checkregs(NPC_CPU_state *ref, uint32_t pc);
+enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
+
+static bool is_skip_ref = false;
+static int skip_dut_nr_inst = 0;
+
 void init_difftest(char *ref_so_file, long img_size, int port) {
   assert(ref_so_file != NULL);
 
@@ -16,19 +24,19 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
   handle = dlopen(ref_so_file, RTLD_LAZY);
   assert(handle);
 
-  ref_difftest_memcpy = dlsym(handle, "difftest_memcpy");
+ *(void**)(&ref_difftest_memcpy) = dlsym(handle, "difftest_memcpy");
   assert(ref_difftest_memcpy);
 
-  ref_difftest_regcpy = dlsym(handle, "difftest_regcpy");
+  *(void**)(&ref_difftest_regcpy) = dlsym(handle, "difftest_regcpy");
   assert(ref_difftest_regcpy);
 
-  ref_difftest_exec = dlsym(handle, "difftest_exec");
+  *(void**)(&ref_difftest_exec) = dlsym(handle, "difftest_exec");
   assert(ref_difftest_exec);
 
-  ref_difftest_raise_intr = dlsym(handle, "difftest_raise_intr");
+  *(void**)(&ref_difftest_raise_intr) = dlsym(handle, "difftest_raise_intr");
   assert(ref_difftest_raise_intr);
 
-  void (*ref_difftest_init)(int) = dlsym(handle, "difftest_init");
+  *(void**)(&ref_difftest_init) = dlsym(handle, "difftest_init");
   assert(ref_difftest_init);
 
   Log("Differential testing: %s", ANSI_FMT("ON", ANSI_FG_GREEN));
@@ -37,8 +45,63 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
       "If it is not necessary, you can turn it off in menuconfig.", ref_so_file);
 
   ref_difftest_init(port);
-  ref_difftest_memcpy(RESET_VECTOR, guest_to_host(RESET_VECTOR), img_size, DIFFTEST_TO_REF);
-  ref_difftest_regcpy(&cpu, DIFFTEST_TO_REF);
+  ref_difftest_memcpy(0x80000000, guest_to_host(0x80000000), img_size, DIFFTEST_TO_REF);
+  cpu_read_reg();
+  ref_difftest_regcpy(cpu.gpr,&cpu.pc, DIFFTEST_TO_REF);
+}
+
+void difftest_step(uint32_t pc, uint32_t npc) {
+  NPC_CPU_state ref_r;
+
+  if (skip_dut_nr_inst > 0) {
+    ref_difftest_regcpy(ref_r.gpr,&ref_r.pc, DIFFTEST_TO_DUT);
+    if (ref_r.pc == npc) {
+      skip_dut_nr_inst = 0;
+      checkregs(&ref_r, npc);
+      return;
+    }
+    skip_dut_nr_inst --;
+    if (skip_dut_nr_inst == 0)
+      printf("can not catch up with ref.pc =  0x%x  at pc =  0x%x " , ref_r.pc, pc);
+    return;
+  }
+
+  if (is_skip_ref) {
+    // to skip the checking of an instruction, just copy the reg state to reference design
+    ref_difftest_regcpy(cpu.gpr,&cpu.pc,DIFFTEST_TO_REF);
+    is_skip_ref = false;
+    return;
+  }
+
+  ref_difftest_exec(1);
+  ref_difftest_regcpy(ref_r.gpr,&ref_r.pc, DIFFTEST_TO_DUT);
+
+  checkregs(&ref_r, pc);
+}
+
+bool isa_difftest_checkregs(NPC_CPU_state *ref_r, uint32_t pc) {
+  int num=32;
+  for(int i=0;i<num;i++)
+  {
+  	if(ref_r->gpr[i]!=cpu.gpr[i])
+	{
+    pc=ref_r->pc;
+		return false;
+	}
+  }
+  if(ref_r->pc!=cpu.pc)
+  {
+    pc=ref_r->pc;
+    return false;
+  }
+  return true;
+}
+
+static void checkregs(NPC_CPU_state *ref, uint32_t pc) {
+  if (!isa_difftest_checkregs(ref, pc)) {
+    npc_state.state = NPC_ABORT;
+    isa_reg_display();
+  }
 }
 
 #endif

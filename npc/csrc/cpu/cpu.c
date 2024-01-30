@@ -47,6 +47,10 @@ void cpu_write_reg()
 	}
 }
 
+#ifdef CONFIG_DIFFTEST
+void difftest_step(uint32_t pc, uint32_t npc);
+#endif
+
 static void trace_and_difftest(Decode *_this) {
 #ifdef CONFIG_ITRACE_COND
   if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
@@ -259,4 +263,3 @@ void print_ringbuf(){
 
 }
 #endif
-
