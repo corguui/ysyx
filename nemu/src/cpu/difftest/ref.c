@@ -17,17 +17,49 @@
 #include <cpu/cpu.h>
 #include <difftest-def.h>
 #include <memory/paddr.h>
+#include <string.h>
+#include <stdio.h>
+
 
 __EXPORT void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction) {
+  if(direction==DIFFTEST_TO_DUT)
+  {
+    memcpy(buf,&addr, n );
+  }
+  else if(direction==DIFFTEST_TO_REF)
+  {
+    memcpy(&addr,buf, n );
+  }
+  else
+  printf("direction error\n");
+  printf("please type DIFFTEST_TO_REF or DIFFTEST_TO_DUT");
   assert(0);
 }
 
 __EXPORT void difftest_regcpy(void *dut, bool direction) {
+  uint32_t* gpr=(uint32_t*) dut;
+  if(direction==DIFFTEST_TO_DUT)
+  {
+    for(int i = 0;i<32;i++ )
+    {
+      gpr[i]=cpu.gpr[i];
+    }
+  }
+  else if(direction==DIFFTEST_TO_REF)
+  {
+    for(int i = 0;i<32;i++ )
+    {
+      cpu.gpr[i]=gpr[i];
+    }
+  }
+  else
+  printf("direction error\n");
+  printf("please type DIFFTEST_TO_REF or DIFFTEST_TO_DUT");
   assert(0);
 }
 
 __EXPORT void difftest_exec(uint64_t n) {
-  assert(0);
+   cpu_exec(n);
 }
 
 __EXPORT void difftest_raise_intr(word_t NO) {

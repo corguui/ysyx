@@ -29,6 +29,10 @@ int func_num=0;
 
 #endif
 
+#ifdef CONFIG_DIFFTEST
+extern long img_size;
+int difftest_port =1234;
+#endif
 void init_monitor() {
 
     init_log();
@@ -36,6 +40,10 @@ void init_monitor() {
 	init_mem();
 
 	init_disasm("riscv32");
+
+    #ifdef CONFIG_DIFFTEST
+    init_difftest(diff_so_file,img_size,difftest_port);
+    #endif
 
 	init_sdb();
 
@@ -62,6 +70,9 @@ void elf_read(char *elf_file)
     {
         printf("failed to open the elf file!\n");
         exit(0);
+    }
+    else {
+    Log("read elf file: %s",elf_file ?elf_file:"stdout");
     }
 	
     Elf32_Ehdr edhr;

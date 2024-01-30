@@ -11,11 +11,12 @@ static uint32_t img[]
 	0x00110008,
 	0x00100073, //ebreak
 };
+long img_size;
 
 void init_mem()
 {
 
-	long size=load_img();
+	img_size=load_img();
 
 	//memcpy(pmem,img,sizeof(img));
 	

@@ -42,6 +42,8 @@ VM_USER_CFLAGS = \
 	-std=c++17 \
 	-fno-exceptions \
 	-fPIE \
+	-L/home/corgi/ysyx-workbench/nemu/build/ \
+	-lriscv32-nemu-interpreter-so \
 
 # User LDLIBS (from -LDFLAGS on Verilator command line)
 VM_USER_LDLIBS = \
