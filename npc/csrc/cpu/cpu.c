@@ -101,8 +101,6 @@ void cpu_exec_once(VerilatedVcdC* tfp,Decode *s)
 		top->eval();
 
 
-
-
 #ifdef CONFIG_ITRACE
   char *p = s->logbuf;
   p += snprintf(p, sizeof(s->logbuf),  "0x%x:", s->pc);
