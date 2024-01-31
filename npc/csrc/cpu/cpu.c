@@ -50,7 +50,7 @@ void cpu_write_reg()
 #ifdef CONFIG_DIFFTEST
 void difftest_step(uint32_t pc, uint32_t npc);
 #endif
-
+int fl=0;
 static void trace_and_difftest(Decode *_this) {
 #ifdef CONFIG_ITRACE_COND
   if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
@@ -119,12 +119,10 @@ void cpu_exec_once(VerilatedVcdC* tfp,Decode *s)
   space_len = space_len * 3 + 1;
   memset(p, ' ', space_len);
   p += space_len;
-  #ifdef CONFIG_ITRACE
-  //itrace the wrong instruct
-  iringbuf_put_char(s->logbuf);
-  #endif
   //p[0] = '\0'; // the upstream llvm does not support loongarch32r
   disassemble(p, s->logbuf + sizeof(s->logbuf) - p,s->pc, (uint8_t *)&s->inst, ilen);
+  //itrace the wrong instruct
+  iringbuf_put_char(s->logbuf);
 #endif
 
 #ifdef CONFIG_FTRACE

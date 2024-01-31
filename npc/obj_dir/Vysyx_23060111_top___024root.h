@@ -22,6 +22,8 @@ class Vysyx_23060111_top___024root final : public VerilatedModule {
     VL_OUT8(inv_flag,0,0);
     CData/*3:0*/ ysyx_23060111_top__DOT__type_i;
     CData/*0:0*/ ysyx_23060111_top__DOT__init_IDU__DOT__typeMux__DOT__i0__DOT__hit;
+    CData/*4:0*/ __Vdlyvdim0__ysyx_23060111_top__DOT__reg___0240__DOT__rf__v0;
+    CData/*0:0*/ __Vdlyvset__ysyx_23060111_top__DOT__reg___0240__DOT__rf__v0;
     CData/*0:0*/ __Vtrigrprev__TOP__clk;
     CData/*3:0*/ __Vtrigrprev__TOP__ysyx_23060111_top__DOT__type_i;
     CData/*0:0*/ __VactDidInit;
@@ -30,8 +32,8 @@ class Vysyx_23060111_top___024root final : public VerilatedModule {
     VL_OUT(pc,31,0);
     IData/*31:0*/ ysyx_23060111_top__DOT__dnpc;
     IData/*31:0*/ ysyx_23060111_top__DOT__wdata;
-    IData/*31:0*/ ysyx_23060111_top__DOT__rout;
     VlWide<10>/*307:0*/ ysyx_23060111_top__DOT__init_IDU__DOT____Vcellinp__typeMux____pinNumber4;
+    IData/*31:0*/ __Vdlyvval__ysyx_23060111_top__DOT__reg___0240__DOT__rf__v0;
     IData/*31:0*/ __VstlIterCount;
     IData/*31:0*/ __VicoIterCount;
     IData/*31:0*/ __Vtrigrprev__TOP__inst;

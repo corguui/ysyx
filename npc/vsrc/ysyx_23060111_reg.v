@@ -9,6 +9,6 @@ module ysyx_23060111_reg #(ADDR_WIDTH = 1, DATA_WIDTH = 1) (
   reg [DATA_WIDTH-1:0] rf [2**ADDR_WIDTH-1:0];
   assign rout=rf[raddr];
   always @(posedge clk) begin
-    if (wen) rf[waddr] <= wdata;
+    if (wen&&waddr!=0) rf[waddr] <= wdata;
   end
 endmodule

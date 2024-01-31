@@ -178,8 +178,7 @@ if(pc!=0x80000000)
   space_len = space_len * 3 + 1;
   memset(p, ' ', space_len);
   p += space_len;
-  //itrace the wrong instruct
-  iringbuf_put_char(s->logbuf);
+
 #ifndef CONFIG_ISA_loongarch32r
   void disassemble(char *str, int size, uint64_t pc, uint8_t *code, int nbyte);
   disassemble(p, s->logbuf + sizeof(s->logbuf) - p,
@@ -187,6 +186,8 @@ if(pc!=0x80000000)
 #else
   p[0] = '\0'; // the upstream llvm does not support loongarch32r
 #endif
+  //itrace the wrong instruct
+  iringbuf_put_char(s->logbuf);
 #endif
 }
 
