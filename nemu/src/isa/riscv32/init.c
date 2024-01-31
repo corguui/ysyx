@@ -32,12 +32,12 @@ static void restart() {
 
   /* The zero register is always 0. */
   cpu.gpr[0] = 0;
-  //cpu.gpr[2] = RESET_VECTOR;
 }
 
 void init_isa() {
   /* Load built-in image. */
   memcpy(guest_to_host(RESET_VECTOR), img, sizeof(img));
+  Log("init the isa");
 
   /* Initialize this virtual computer system. */
   restart();

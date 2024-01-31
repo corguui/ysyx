@@ -40,6 +40,7 @@ void init_monitor() {
 
 	init_mem();
 
+
     #ifdef CONFIG_DIFFTEST
     if(diff_so_file!=NULL)
     {
