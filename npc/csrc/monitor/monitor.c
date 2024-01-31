@@ -36,6 +36,13 @@ int difftest_port =1234;
 char *diff_so_file=(char*)NPC_DIFF;
 void init_difftest(char *ref_so_file, long img_size, int port);
 #endif
+
+void init_mode()
+{
+    
+
+}
+
 void init_monitor() {
 
     init_log();
