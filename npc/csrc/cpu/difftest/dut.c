@@ -15,9 +15,6 @@ void isa_reg_display();
 static void checkregs(NPC_CPU_state *ref, uint32_t pc);
 enum { DIFFTEST_TO_DUT, DIFFTEST_TO_REF };
 
-static bool is_skip_ref = false;
-static int skip_dut_nr_inst = 0;
-
 void init_difftest(char *ref_so_file, long img_size, int port) {
   assert(ref_so_file != NULL);
 
@@ -54,26 +51,6 @@ void init_difftest(char *ref_so_file, long img_size, int port) {
 void difftest_step(uint32_t pc, uint32_t npc) {
   NPC_CPU_state ref_r;
 
-  if (skip_dut_nr_inst > 0) {
-    ref_difftest_regcpy(ref_r.gpr,&ref_r.pc, DIFFTEST_TO_DUT);
-    if (ref_r.pc == npc) {
-      skip_dut_nr_inst = 0;
-      checkregs(&ref_r, npc);
-      return;
-    }
-    skip_dut_nr_inst --;
-    if (skip_dut_nr_inst == 0)
-      printf("can not catch up with ref.pc =  0x%x  at pc =  0x%x " , ref_r.pc, pc);
-    return;
-  }
-
-  if (is_skip_ref) {
-    // to skip the checking of an instruction, just copy the reg state to reference design
-    ref_difftest_regcpy(cpu.gpr,&cpu.pc,DIFFTEST_TO_REF);
-    is_skip_ref = false;
-    return;
-  }
-
   ref_difftest_exec(1);
   ref_difftest_regcpy(ref_r.gpr,&ref_r.pc, DIFFTEST_TO_DUT);
 
@@ -93,7 +70,7 @@ bool isa_difftest_checkregs(NPC_CPU_state *ref_r, uint32_t pc) {
   }
   if(ref_r->pc!=pc)
   {
-    printf(" npc-pc:%x\nnemupc%x\n",cpu.pc,ref_r->pc);
+    printf(" npc-pc:%x\nnemu-pc%x\n",cpu.pc,ref_r->pc);
     return false;
   }
   return true;

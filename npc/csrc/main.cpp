@@ -11,12 +11,14 @@ VerilatedVcdC* tfp=NULL;
 
 void init_monitor();
 void init_mode();
+void parse_args(int argc,char *argv[]);
 
 int main_time=0;
 
 
 int main(int argc ,char** argv, char** env)
 {
+	parse_args(argc, argv);
 	contextp = new VerilatedContext;
 	contextp->commandArgs(argc,argv);
 	top = new Vysyx_23060111_top{contextp};
