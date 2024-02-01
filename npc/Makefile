@@ -6,7 +6,8 @@ Wavefile=$(wildcard ./*.vcd)
 TOPfile=vsrc/ysyx_23060111_top.v
 TOPname=ysyx_23060111_top
 
-
+CONFIG: ./include/config.h 
+	@sed -e 's/^#define \(.*\) \(.*\)/\1=\2/' -e '/^#\(.*\)/d' -e '/^\/\(.*\)/d' -e '/^_\(.*\)/d' ./include/config.h > ./config.mk
 
 #init
 IMG ?= 
@@ -25,34 +26,39 @@ NPC_GDB_RUN = obj_dir/V$(basename $(subst vsrc/,,$(TOPfile)))
 NPC_LOG = ./npc-log.txt
 RUN_FLAGS +=  $(NPC_LOG)
 
+-include config.mk
+
 #ftrace
+ifdef CONFIG_FTRACE
 ELF =$(IMG:.bin=.elf)
 RUN_FLAGS += $(ELF)
+endif
 
 #itrace
+ifdef CONFIG_ITRACE
 Cfile += csrc/utils/disasm.cc
 VLTFLAGS += -CFLAGS -I/usr/lib/llvm-14/include -CFLAGS -std=c++17\
   -CFLAGS -fno-exceptions  -CFLAGS -fPIE -LDFLAGS -lLLVM-14
 VLTFLAGS += -LDFLAGS -lreadline
+endif
 
 #difftest
+ifdef CONFIG_DIFFTEST
 LIB_PATH = $(HOME)/ysyx-workbench/nemu/build/
 LIB = $(HOME)/ysyx-workbench/nemu/build/riscv32-nemu-interpreter-so
 VLTFLAGS +=  -CFLAGS -L$(LIB_PATH) -CFLAGS -lriscv32-nemu-interpreter-so
 RUN_FLAGS += $(LIB)
 NPC_SIM_RUN := LD_PRELOAD=/usr/lib/gcc/x86_64-linux-gnu/11/libasan.so $(NPC_SIM_RUN)
 NPC_GDB_RUN := -ex 'set env LD_PRELOAD /usr/lib/gcc/x86_64-linux-gnu/11/libasan.so' 
+endif
 #gdb
 NPC_GDB = -CFLAGS -g 
 
 
-CONFIG: ./include/config.h
-	@touch config.mk
-	@sed 's/^#define \(.*\) \(.*\)/\1=\2/' ./include/config.h >./config.mk
 all:
 	@echo "Write this Makefile by your self."
 
-sim:$(Vfile) $(Cfile) $(TOPfile) $(CONFIG) 
+sim:$(Vfile) $(Cfile) $(TOPfile) 
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	@echo "Write this Makefile by your self."
 	verilator $(VLTFLAGS) 
@@ -75,4 +81,5 @@ clean:
 	rm -rf obj_dir wave.vcd
 	rm -rf $(BUILD_DIR)
 	rm -rf $(NPC_LOG)
+	rm -rf ./config.mk
 include ../Makefile

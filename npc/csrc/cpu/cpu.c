@@ -1,3 +1,4 @@
+#include "config.h"
 #include <cpu/cpu.h>
 #include <cpu/decode.h>
 #include<common.h>
@@ -55,11 +56,11 @@ void difftest_step(uint32_t pc, uint32_t npc);
 #endif
 int fl=0;
 static void trace_and_difftest(Decode *_this) {
-#ifdef CONFIG_ITRACE_COND
-  if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
+#ifdef CONFIG_ITRACE
+  if (CONFIG_ITRACE) { log_write("%s\n", _this->logbuf); }
 #endif
-#ifdef CONFIG_FTRACE_COND
-  if (FTRACE_COND&&print_flat==1) { print_flat=0; log_write("%s\n", _this->fun_printf_buf); }
+#ifdef CONFIG_FTRACE
+  if (CONFIG_FTRACE&&print_flat==1) { print_flat=0; log_write("%s\n", _this->fun_printf_buf); }
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   #ifdef CONFIG_DIFFTEST 
