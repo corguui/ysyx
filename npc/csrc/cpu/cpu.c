@@ -13,6 +13,7 @@ extern FUN *symbol;
 extern int func_num;
 int space_num=-1;
 int space_flat=0;
+int print_flat=0;
 #endif
 
 
@@ -54,6 +55,9 @@ int fl=0;
 static void trace_and_difftest(Decode *_this) {
 #ifdef CONFIG_ITRACE_COND
   if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
+#endif
+#ifdef CONFIG_FTRACE_COND
+  if (FTRACE_COND&&print_flat==1) { print_flat=0; log_write("%s\n", _this->fun_printf_buf); }
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   #ifdef CONFIG_DIFFTEST 
@@ -131,6 +135,7 @@ void cpu_exec_once(VerilatedVcdC* tfp,Decode *s)
   char ar2[]="00 00 80 67";//funbuf 0x8--------: 00 00 80 67 jalr  ..... the ret is 80 67
   //00 07 80 67 jr mean call to but no printf the ret//in f1 have jr call to f0 the f1 no ret
   char *q = s->funbuf;
+  char *pr= s->fun_printf_buf;
   q += snprintf(q, sizeof(s->funbuf), "0x%x:", s->pc);
   int funlen = 0x4;
   int j;
@@ -171,9 +176,10 @@ if(strncmp(s->funbuf+24,ar,3)==0)
 		     {
 		     	space_num--;
 		     }
-		     printf("0x%x:",s->pc);
-		     printf("---num: %d   ret [fun:%s  @%x]\n",space_num,symbol[f].name,symbol[f].value); 
+		     pr+=sprintf(pr,"0x%x:",s->pc);
+		     pr+=sprintf(pr,"---num: %d   ret [fun:%s  @%x]\n",space_num,symbol[f].name,symbol[f].value); 
 		     space_flat=1;
+			 print_flat=1;
 		     break;
 		   }
 		   else if(flat_ret==0)//call
@@ -182,9 +188,10 @@ if(strncmp(s->funbuf+24,ar,3)==0)
 		     {
 		     	space_num++;
 		     }
-		     printf("0x%x:",s->pc);
-		     printf("---num: %d  call [fun:%s  @%x]\n",space_num,symbol[g].name,symbol[g].value);
+		     pr+=sprintf(pr,"0x%x:",s->pc);
+		     pr+=sprintf(pr,"---num: %d  call [fun:%s  @%x]\n",space_num,symbol[g].name,symbol[g].value);
 			space_flat=0;
+			print_flat=1;
 			break;
 		   }
 		}

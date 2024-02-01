@@ -10,6 +10,7 @@ Vysyx_23060111_top *top=NULL;
 VerilatedVcdC* tfp=NULL;
 
 void init_monitor();
+void init_mode();
 
 int main_time=0;
 
@@ -25,11 +26,11 @@ int main(int argc ,char** argv, char** env)
 	top->trace(tfp,0);
 	tfp->open("wave.vcd");
 
+	//init mode
+	init_mode();
 
 	//init_monitor
 	init_monitor();
-
-	//init cpu
 
 	sdb_mainloop();
 	delete top;

@@ -10,6 +10,8 @@
 #define ARRLEN(arr) (int)(sizeof(arr) / sizeof(arr[0])) 
 extern int flat_HEX;
 void isa_reg_display();
+static int is_batch_mode = false;
+
 
 static char* rl_gets() {
   static char *line_read = NULL;
@@ -156,15 +158,15 @@ static int cmd_help(char *args) {
   return 0;
 }
 
-
+void sdb_set_batch_mode()
+{
+  is_batch_mode =true;
+}
 void sdb_mainloop() {
-/*
   if (is_batch_mode) {
     cmd_c(NULL);
     return;
   }
- */
-
   for (char *str; (str = rl_gets()) != NULL; ) {
     char *str_end = str + strlen(str);
 

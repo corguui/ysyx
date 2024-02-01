@@ -6,8 +6,10 @@ Wavefile=$(wildcard ./*.vcd)
 TOPfile=vsrc/ysyx_23060111_top.v
 TOPname=ysyx_23060111_top
 
-IMG ?= 
 
+
+#init
+IMG ?= 
 VLTFLAGS =-Wall --cc --trace --exe --build -Wno-lint -top\
  $(TOPname) $(TOPfile) $(subst $(TOPfile),,$^) -CFLAGS -DNPC_IMG='\"$(IMG)\"'
 
@@ -17,22 +19,28 @@ VLTFLAGS += -CFLAGS -I$(INC_PATH)
 NPC_SIM_RUN = ./obj_dir/V$(basename $(subst vsrc/,,$(TOPfile))) 
 NPC_GDB_RUN = obj_dir/V$(basename $(subst vsrc/,,$(TOPfile))) 
 
+#logfile
+NPC_LOG = ./npc-log.txt
+VLTFLAGS += -CFLAGS -DNPC_LOG='\"$(NPC_LOG)\"'
+
+#ftrace
 ELF =$(IMG:.bin=.elf)
 VLTFLAGS +=  -CFLAGS -DNPC_ELF='\"$(ELF)\"'
 
-
+#itrace
 Cfile += csrc/utils/disasm.cc
 VLTFLAGS += -CFLAGS -I/usr/lib/llvm-14/include -CFLAGS -std=c++17\
   -CFLAGS -fno-exceptions  -CFLAGS -fPIE -LDFLAGS -lLLVM-14
 VLTFLAGS += -LDFLAGS -lreadline
 
+#difftest
 LIB_PATH = $(HOME)/ysyx-workbench/nemu/build/
 LIB = $(HOME)/ysyx-workbench/nemu/build/riscv32-nemu-interpreter-so
 VLTFLAGS +=  -CFLAGS -L$(LIB_PATH) -CFLAGS -lriscv32-nemu-interpreter-so\
  -CFLAGS -DNPC_DIFF='\"$(LIB)\"'
 NPC_SIM_RUN := LD_PRELOAD=/usr/lib/gcc/x86_64-linux-gnu/11/libasan.so $(NPC_SIM_RUN)
 NPC_GDB_RUN := -ex 'set env LD_PRELOAD /usr/lib/gcc/x86_64-linux-gnu/11/libasan.so' 
-
+#gdb
 NPC_GDB = -CFLAGS -g 
 
 
