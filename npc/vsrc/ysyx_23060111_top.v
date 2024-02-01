@@ -28,7 +28,18 @@ module ysyx_23060111_top(
   wire wen;
   wire[31:0] rout;
 
-
+//mem
+  wire [31:0] m_waddr;
+  wire [31:0] m_wdata;
+  wire [31:0] m_wmask;
+  wire [31:0] m_rdata;
+  wire [31:0] m_raddr;
+  wire  m_wen; 
+  assign m_waddr=32'h80000040;
+  assign m_wdata=32'h00009117;
+  assign m_wen=1;
+  assign m_wmask=32'd4;
+  assign m_raddr=32'h80000004;
 //init pc
 ysyx_23060111_pc pc_renew (clk,rst,snpc,dnpc,pc);
 
@@ -43,6 +54,9 @@ ysyx_23060111_IDU init_IDU (inst,opcode,rd,funct3,rs1,rs2,funct7,type_i,imm,inv_
 
  //init EXU
 ysyx_23060111_EXU init_EXU (rout,pc,dnpc,opcode,rd,funct3,rs1,rs2,funct7,type_i,imm,wdata,waddr,raddr,snpc,wen);
+
+//init mem
+ysyx_23060111_mem init_the_mem (clk,m_waddr,m_wdata,m_wmask,m_wen,m_raddr,m_rdata);
 
 
 

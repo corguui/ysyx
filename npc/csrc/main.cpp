@@ -1,9 +1,11 @@
+#include <cstdint>
 #include<stdio.h>
 //#include"svdpi.h"
 
 #include <cpu/cpu.h>
 #include <sdb.h>
 #include "Vysyx_23060111_top___024root.h"
+#include "mem.h"
 
 VerilatedContext* contextp=NULL; 
 Vysyx_23060111_top *top=NULL; 
@@ -35,6 +37,11 @@ int main(int argc ,char** argv, char** env)
 	init_monitor();
 
 	sdb_mainloop();
+
+		
+	printf("%x\n",top->rootp->ysyx_23060111_top__DOT__m_rdata);
+	uint32_t ad=0x80000040;
+	printf("%x\n",pmem_read(ad, 4));
 	delete top;
 	tfp->close();
 	delete contextp;
