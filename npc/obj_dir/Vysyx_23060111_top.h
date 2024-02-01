@@ -31,7 +31,6 @@ class Vysyx_23060111_top VL_NOT_FINAL : public VerilatedModel {
     VL_IN8(&clk,0,0);
     VL_IN8(&rst,0,0);
     VL_OUT8(&inv_flag,0,0);
-    VL_IN(&inst,31,0);
     VL_OUT(&pc,31,0);
 
     // CELLS

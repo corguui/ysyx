@@ -1,3 +1,4 @@
+#include <cstdint>
 #include<stdio.h>
 #include<string.h>
 #include<unistd.h>
@@ -33,6 +34,8 @@ void init_mem()
 }
 
 
+
+
 uint32_t pc_read(uint32_t &pc)
 {
 	uint32_t val=pmem_read(pc,4);
@@ -50,6 +53,12 @@ uint32_t pmem_read(uint32_t &ad,int len)
 	}
 }
 
+extern "C" int vlg_pmem_read(int ad)
+{
+	uint32_t pc=(uint32_t)ad;
+	uint32_t data=pmem_read(pc, 4);
+	return (int) data; 
+}
 
 void pmem_write(uint32_t &ad, int len, uint32_t data)
 {

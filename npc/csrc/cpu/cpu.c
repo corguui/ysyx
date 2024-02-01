@@ -98,8 +98,7 @@ void cpu_exec_once(VerilatedVcdC* tfp,Decode *s)
 
 		top->clk =0; top->eval();
 		s->pc=top->pc;
-		top->inst =pc_read(top->pc);
-		s->inst=top->inst;
+		s->inst=top->rootp->ysyx_23060111_top__DOT__inst;
 		tfp->dump(main_time);
 		main_time++;
 		top->eval();
