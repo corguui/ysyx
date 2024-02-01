@@ -1,4 +1,3 @@
-#include "config.h"
 #include <common.h>
 #include <stdio.h>
 #include <string.h>
@@ -11,7 +10,9 @@ void sdb_set_batch_mode();
 
 char* log_file= (char*)NPC_LOG;
 
+#if defined(CONFIG_FTRACE) or defined(CONFIG_ITRACE)
 extern "C" void init_disasm(const char *triple);
+#endif
 
 
 #ifdef CONFIG_FTRACE
@@ -69,7 +70,9 @@ void init_monitor() {
 
 	init_sdb();
 
+    #if defined(CONFIG_FTRACE) or defined(CONFIG_ITRACE)
 	init_disasm("riscv32");
+    #endif
 
     #ifdef CONFIG_FTRACE
     elf_read(elf_file);

@@ -1,11 +1,13 @@
 #include <cpu/cpu.h>
-#include <cstdint>
 #include <cpu/decode.h>
 #include<common.h>
 #include <sched.h>
 #include <sdb.h>
 #include <stdio.h>
+
+#if defined(CONFIG_FTRACE) or defined(CONFIG_ITRACE)
 extern "C" void disassemble(char *str, int size, uint64_t pc, uint8_t *code,int nbyte);
+#endif
 
 #ifdef CONFIG_FTRACE
 #include <monitor.h>
