@@ -3,7 +3,7 @@ module ysyx_23060111_top(
   input       rst,
   input       clk,
   output [31:0] pc,
-  output inv_flag//invalid_opcode
+  output inv_flag//invalid_opcode (when can't find the type)
   
  );
   wire [31:0]inst;
@@ -35,6 +35,7 @@ module ysyx_23060111_top(
   wire [31:0] m_rdata;
   wire [31:0] m_raddr;
   wire  m_wen; 
+  //mem test
   assign m_waddr=32'h80000040;
   assign m_wdata=32'h00009117;
   assign m_wen=1;
@@ -43,19 +44,19 @@ module ysyx_23060111_top(
 //init pc
 ysyx_23060111_pc pc_renew (clk,rst,snpc,dnpc,pc);
 
-//init IFU
+//init IFU 取码
 ysyx_23060111_IFU init_IFU (clk,pc,inst);
 
-//init reg
+//init reg 
 ysyx_23060111_reg #(5,32) reg_$0(clk,wdata,waddr,raddr,wen,rout);
 
- //init IDU
+ //init IDU 译码
 ysyx_23060111_IDU init_IDU (inst,opcode,rd,funct3,rs1,rs2,funct7,type_i,imm,inv_flag);
 
- //init EXU
+ //init EXU 执行
 ysyx_23060111_EXU init_EXU (rout,pc,dnpc,opcode,rd,funct3,rs1,rs2,funct7,type_i,imm,wdata,waddr,raddr,snpc,wen);
 
-//init mem
+//init mem read and write
 ysyx_23060111_mem init_the_mem (clk,m_waddr,m_wdata,m_wmask,m_wen,m_raddr,m_rdata);
 
 

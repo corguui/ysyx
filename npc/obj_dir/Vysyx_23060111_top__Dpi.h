@@ -19,7 +19,7 @@ extern "C" {
     // DPI import at vsrc/ysyx_23060111_IDU.v:1:30
     extern void ebreak(int inst);
     // DPI import at vsrc/ysyx_23060111_IFU.v:1:29
-    extern int vlg_pmem_read(int pc);
+    extern int vlg_pmem_read(int pc, int flag);
     // DPI import at vsrc/ysyx_23060111_mem.v:1:30
     extern void vlg_pmem_write(int waddr, int wdata, int wmask);
 

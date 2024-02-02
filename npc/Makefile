@@ -5,7 +5,7 @@ Cfile +=$(shell find -L ./csrc -name "*.c")
 Wavefile=$(wildcard ./*.vcd)
 TOPfile=vsrc/ysyx_23060111_top.v
 TOPname=ysyx_23060111_top
-
+#  create the  Makefile config.mk 
 CONFIG: ./include/config.h 
 	@sed -e 's/^#define \(.*\) \(.*\)/\1=\2/' -e '/^#\(.*\)/d' -e '/^\/\(.*\)/d' -e '/^_\(.*\)/d' ./include/config.h > ./config.mk
 
@@ -34,7 +34,7 @@ ELF =$(IMG:.bin=.elf)
 RUN_FLAGS += $(ELF)
 endif
 
-#itrace
+#itrace llvm--反汇编
 ifdef CONFIG_ITRACE
 Cfile += csrc/utils/disasm.cc
 VLTFLAGS += -CFLAGS -I/usr/lib/llvm-14/include -CFLAGS -std=c++17\
@@ -42,7 +42,7 @@ VLTFLAGS += -CFLAGS -I/usr/lib/llvm-14/include -CFLAGS -std=c++17\
 VLTFLAGS += -LDFLAGS -lreadline
 endif
 
-#difftest
+#difftest  链接nemu-so动态库
 ifdef CONFIG_DIFFTEST
 LIB_PATH = $(HOME)/ysyx-workbench/nemu/build/
 LIB = $(HOME)/ysyx-workbench/nemu/build/riscv32-nemu-interpreter-so
@@ -81,5 +81,4 @@ clean:
 	rm -rf obj_dir wave.vcd
 	rm -rf $(BUILD_DIR)
 	rm -rf $(NPC_LOG)
-	rm -rf ./config.mk
 include ../Makefile

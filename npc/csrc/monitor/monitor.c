@@ -9,7 +9,7 @@ void cpu_init();
 void sdb_set_batch_mode();
 
 char* img_file=NULL;
-char* log_file=NULL;//= (char*)NPC_LOG;
+char* log_file=NULL;
 
 #if defined(CONFIG_FTRACE) or defined(CONFIG_ITRACE)
 extern "C" void init_disasm(const char *triple);
@@ -22,16 +22,8 @@ extern "C" void init_disasm(const char *triple);
 char *elf_file =NULL; 
 void elf_read(char *elf_file);
 
-/*
-transfer to momitor.h
-typedef struct function
-{
-	uint32_t value;
-	int      size;
-	char     name[128];
-}FUN;
-*/
 FUN *symbol = NULL;  //dynamic allocate memory  or direct allocate memory (Symbol symbol[NUM])
+
 int func_num=0;
 
 #endif
@@ -39,7 +31,7 @@ int func_num=0;
 #ifdef CONFIG_DIFFTEST
 extern long img_size;
 int difftest_port =1234;
-char *diff_so_file=NULL;//=(char*)NPC_DIFF;
+char *diff_so_file=NULL;
 void init_difftest(char *ref_so_file, long img_size, int port);
 #endif
 
@@ -51,7 +43,7 @@ void init_mode()
         sdb_set_batch_mode();
    }
 }
-
+//get the files
 void parse_args(int argc,char **argv)
 {
     int elf_flat=0;
@@ -89,6 +81,7 @@ void init_monitor() {
 	init_sdb();
 
     #if defined(CONFIG_FTRACE) or defined(CONFIG_ITRACE)
+    //反汇编
 	init_disasm("riscv32");
     #endif
 

@@ -10,7 +10,9 @@ module ysyx_23060111_mem(
     output [31:0] rdata
 
 ); 
-    assign rdata =vlg_pmem_read(raddr);
+    wire [31:0] flag; //flag ==1 pmem read
+    assign flag=32'd1;
+    assign rdata =vlg_pmem_read(raddr,flag);
     always@(posedge clk)
     begin
         if(wen)

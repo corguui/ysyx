@@ -1,9 +1,19 @@
-#include <cstdint>
+#include <assert.h>
 #include<stdio.h>
 #include<string.h>
 #include<unistd.h>
 #include<mem.h>
+#include<cpu/cpu.h>
 
+#ifdef CONFIG_MTRACE
+//memory tarce
+unsigned int write_buf[100000000];
+unsigned int read_buf[100000000];
+int write_num=0;
+int read_num=0;
+#endif
+
+int init_flag=1;
 static long load_img();
 static uint8_t pmem[0x8000000] __attribute((aligned(4096)))={};
 static uint32_t img[]
@@ -32,8 +42,28 @@ void init_mem()
 	i 
 	*/
 }
-
-
+static void out_of_bound(uint32_t addr)
+{
+	printf("error out_of_bound\naddress = 0x%x\npc = 0x%x\n",addr,top->pc);
+	#ifdef CONFIG_MTRACE
+		log_write("----------write----------\n");
+		for(int i=0;i<write_num;i++)
+  		{
+  			log_write("----  0x%x\n",write_buf[i]);
+  		}
+  		log_write("--------  read  ---------\n");
+  		for(int i=0;i<read_num;i++)
+  		{
+  			log_write("----  0x%x\n",read_buf[i]);
+  		}
+	#endif
+	assert(0);
+}
+//check mem if out_of_bond will excute the fun out_of_bond
+static inline bool check_mem(uint32_t addr)
+{
+	return addr-0x80000000<0x80000000;
+}
 
 
 uint32_t pc_read(uint32_t &pc)
@@ -43,7 +73,7 @@ uint32_t pc_read(uint32_t &pc)
 }
 uint32_t pmem_read(uint32_t &ad,int len)
 {
-        uint8_t *addr =pmem+ad-0x80000000;
+    uint8_t *addr =pmem+ad-0x80000000;
 	switch(len){
 	case 1: return *(uint8_t *)addr;
 	case 2: return *(uint16_t *)addr;
@@ -52,12 +82,31 @@ uint32_t pmem_read(uint32_t &ad,int len)
 	{ assert(0); printf("pmem_read error\n");   return 0;}
 	}
 }
-
-extern "C" int vlg_pmem_read(int ad)
+//pmem read in mem.v
+extern "C" int vlg_pmem_read(int ad,int flag)
 {
+	//flag == 0 IFU  flag ==  1  pmem_read
 	uint32_t pc=(uint32_t)ad;
+	if(ad==0&&init_flag==1)  //ad before init
+	{
+		init_flag=0;
+		return 0;
+	}
+	if(likely(check_mem(ad)))
+	{
 	uint32_t data=pmem_read(pc, 4);
+	#ifdef  CONFIG_MTRACE
+	if(flag == 1)
+	{
+	 	read_buf[read_num]=ad;
+  		read_num++;
+	}
+	#endif
 	return (int) data; 
+	}
+	printf("read\n");
+	out_of_bound(ad);
+	return 0;
 }
 
 void pmem_write(uint32_t &ad, int len, uint32_t data)
@@ -71,12 +120,22 @@ void pmem_write(uint32_t &ad, int len, uint32_t data)
 	  { assert(0); printf("pmem_write error\n");   }
 	}
 }
-
+//pmem_write in mem.v
 extern "C" void vlg_pmem_write(int ad,int wdata,int len)
 {
 	uint32_t pc=(uint32_t)ad;
+	if(likely(check_mem(ad)))
+	{
 	uint32_t data=(uint32_t)wdata;
+	#ifdef CONFIG_MTRACE
+	write_buf[write_num]=ad;
+	write_num++;
+	#endif
 	pmem_write(pc,len,data);
+	return ;
+	}
+	printf("write\n");
+	out_of_bound(ad);
 }
 
 uint8_t* NPC_guest_to_host(uint32_t paddr) { return pmem + paddr - 0x80000000; }
@@ -100,4 +159,22 @@ static long load_img(){
                
    fclose(fp); 
    return size;
+}
+
+void pmem_out()
+{
+		#ifdef CONFIG_MTRACE
+		log_write("----------write----------\n");
+		for(int i=0;i<write_num;i++)
+  		{
+  			log_write("----  0x%x\n",write_buf[i]);
+  		}
+  		log_write("--------  read  ---------\n");
+  		for(int i=0;i<read_num;i++)
+  		{
+  			log_write("----  0x%x\n",read_buf[i]);
+  		}
+		#else 
+		printf("don't open the mtrace");
+		#endif
 }

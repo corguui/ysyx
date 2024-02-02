@@ -36,26 +36,30 @@ int main(int argc ,char** argv, char** env)
 	//init_monitor
 	init_monitor();
 
+	//(npc)   command
 	sdb_mainloop();
 
-		
 	printf("%x\n",top->rootp->ysyx_23060111_top__DOT__m_rdata);
 	uint32_t ad=0x80000040;
 	printf("%x\n",pmem_read(ad, 4));
 	delete top;
 	tfp->close();
 	delete contextp;
+	#ifdef CONFIG_MTRACE
+	//print the mem read and write  ---logfile
+	pmem_out();
+	#endif
 	return is_exit_status_bad();
 }
 void ebreak (int inst)
 {
 	if(inst == 0x00100073 )
 	{
-	   NPCTRAP(top->rootp->ysyx_23060111_top__DOT__reg___0240__DOT__rf[10]);
+	   NPCTRAP(top->rootp->ysyx_23060111_top__DOT__reg___0240__DOT__rf[10]);//ebreak
 	}
 	if(inst!=0&&top->inv_flag==1)
 	{
-		INV();
+		INV();//can't find the command type
 	}
 	else if(inst==0&&top->inv_flag==1)
 	{

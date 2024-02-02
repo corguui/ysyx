@@ -107,6 +107,7 @@ VL_ATTR_COLD void Vysyx_23060111_top___024root__trace_init_sub__TOP__0(Vysyx_230
     tracep->declBit(c+94,"clk", false,-1);
     tracep->declBus(c+95,"pc", false,-1, 31,0);
     tracep->declBus(c+9,"inst", false,-1, 31,0);
+    tracep->declBus(c+113,"flag", false,-1, 31,0);
     tracep->popNamePrefix(1);
     tracep->pushNamePrefix("init_the_mem ");
     tracep->declBit(c+94,"clk", false,-1);
@@ -116,6 +117,7 @@ VL_ATTR_COLD void Vysyx_23060111_top___024root__trace_init_sub__TOP__0(Vysyx_230
     tracep->declBit(c+101,"wen", false,-1);
     tracep->declBus(c+105,"raddr", false,-1, 31,0);
     tracep->declBus(c+1,"rdata", false,-1, 31,0);
+    tracep->declBus(c+114,"flag", false,-1, 31,0);
     tracep->popNamePrefix(1);
     tracep->pushNamePrefix("pc_renew ");
     tracep->declBit(c+94,"clk", false,-1);
@@ -124,8 +126,8 @@ VL_ATTR_COLD void Vysyx_23060111_top___024root__trace_init_sub__TOP__0(Vysyx_230
     tracep->declBus(c+97,"dnpc", false,-1, 31,0);
     tracep->declBus(c+95,"pc", false,-1, 31,0);
     tracep->pushNamePrefix("renew_pc ");
-    tracep->declBus(c+113,"WIDTH", false,-1, 31,0);
-    tracep->declBus(c+114,"RESET_VAL", false,-1, 31,0);
+    tracep->declBus(c+115,"WIDTH", false,-1, 31,0);
+    tracep->declBus(c+116,"RESET_VAL", false,-1, 31,0);
     tracep->declBit(c+94,"clk", false,-1);
     tracep->declBit(c+93,"rst", false,-1);
     tracep->declBus(c+97,"din", false,-1, 31,0);
@@ -133,8 +135,8 @@ VL_ATTR_COLD void Vysyx_23060111_top___024root__trace_init_sub__TOP__0(Vysyx_230
     tracep->declBit(c+101,"wen", false,-1);
     tracep->popNamePrefix(2);
     tracep->pushNamePrefix("reg_$0 ");
-    tracep->declBus(c+115,"ADDR_WIDTH", false,-1, 31,0);
-    tracep->declBus(c+113,"DATA_WIDTH", false,-1, 31,0);
+    tracep->declBus(c+117,"ADDR_WIDTH", false,-1, 31,0);
+    tracep->declBus(c+115,"DATA_WIDTH", false,-1, 31,0);
     tracep->declBit(c+94,"clk", false,-1);
     tracep->declBus(c+99,"wdata", false,-1, 31,0);
     tracep->declBus(c+11,"waddr", false,-1, 4,0);
@@ -279,7 +281,9 @@ VL_ATTR_COLD void Vysyx_23060111_top___024root__trace_full_sub_0(Vysyx_23060111_
     bufp->fullIData(oldp+110,(1U),32);
     bufp->fullIData(oldp+111,(0x2cU),32);
     bufp->fullIData(oldp+112,(7U),32);
-    bufp->fullIData(oldp+113,(0x20U),32);
-    bufp->fullIData(oldp+114,(0x80000000U),32);
-    bufp->fullIData(oldp+115,(5U),32);
+    bufp->fullIData(oldp+113,(0U),32);
+    bufp->fullIData(oldp+114,(1U),32);
+    bufp->fullIData(oldp+115,(0x20U),32);
+    bufp->fullIData(oldp+116,(0x80000000U),32);
+    bufp->fullIData(oldp+117,(5U),32);
 }
