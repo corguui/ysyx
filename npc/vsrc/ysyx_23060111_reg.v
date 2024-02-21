@@ -4,7 +4,7 @@ module ysyx_23060111_reg #(ADDR_WIDTH = 1, DATA_WIDTH = 1) (
   input [ADDR_WIDTH-1:0] waddr,
   input [ADDR_WIDTH-1:0] raddr1,
   input [ADDR_WIDTH-1:0] raddr2,
-  input wen,
+  output reg  wen,
   output [DATA_WIDTH-1:0] rout1,
   output [DATA_WIDTH-1:0] rout2
  
@@ -13,6 +13,9 @@ module ysyx_23060111_reg #(ADDR_WIDTH = 1, DATA_WIDTH = 1) (
   assign rout1=rf[raddr1];
   assign rout2=rf[raddr2];
   always @(posedge clk) begin
-    if (wen&&waddr!=0) rf[waddr] <= wdata;
+    if (wen&&waddr!=0)begin
+       rf[waddr] <= wdata;
+       wen=1'b0;
+    end
   end
 endmodule
