@@ -5,9 +5,6 @@ Cfile +=$(shell find -L ./csrc -name "*.c")
 Wavefile=$(wildcard ./*.vcd)
 TOPfile=vsrc/ysyx_23060111_top.v
 TOPname=ysyx_23060111_top
-#  create the  Makefile config.mk 
-CONFIG: ./include/config.h 
-	@sed -e 's/^#define \(.*\) \(.*\)/\1=\2/' -e '/^#\(.*\)/d' -e '/^\/\(.*\)/d' -e '/^_\(.*\)/d' ./include/config.h > ./config.mk
 
 #init
 IMG ?= 
@@ -57,6 +54,11 @@ NPC_GDB = -CFLAGS -g
 
 all:
 	@echo "Write this Makefile by your self."
+
+#  create the  Makefile config.mk 
+CONFIG: ./include/config.h 
+	@sed -e 's/^#define \(.*\) \(.*\)/\1=\2/' -e '/^#\(.*\)/d' -e '/^\/\(.*\)/d' -e '/^_\(.*\)/d' ./include/config.h > ./config.mk
+
 
 sim:$(Vfile) $(Cfile) $(TOPfile) 
 	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
