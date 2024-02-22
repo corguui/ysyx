@@ -70,7 +70,7 @@ bool isa_difftest_checkregs(NPC_CPU_state *ref_r, uint32_t pc) {
   }
   if(ref_r->pc!=pc)
   {
-    printf(" npc-dnpc:%x\nnemu-dnpc:%x\n",pc,ref_r->pc);
+    printf(" npc-pc:%x\nnemu-pc:%x\n",pc,ref_r->pc);
     return false;
   }
   return true;

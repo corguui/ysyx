@@ -13,7 +13,6 @@ int write_num=0;
 int read_num=0;
 #endif
 
-int init_flag=1;
 static long load_img();
 static uint8_t pmem[0x8000000] __attribute((aligned(4096)))={};
 static uint32_t img[]
@@ -57,6 +56,7 @@ static void out_of_bound(uint32_t addr)
   			log_write("----  0x%x\n",read_buf[i]);
   		}
 	#endif
+	tfp->close();
 	assert(0);
 }
 //check mem if out_of_bond will excute the fun out_of_bond
@@ -83,29 +83,33 @@ uint32_t pmem_read(uint32_t &ad,int len)
 	}
 }
 //pmem read in mem.v
-extern "C" int vlg_pmem_read(int ad,int flag)
+extern "C" int vlg_pmem_read(int ad)
 {
-	//flag == 0 IFU  flag ==  1  pmem_read
-	uint32_t pc=(uint32_t)ad;
-	if(ad==0&&init_flag==1)  //ad before init
+	uint32_t addr=(uint32_t)ad;
+	if(likely(check_mem(addr)))
 	{
-		init_flag=0;
-		return 0;
-	}
-	if(likely(check_mem(ad)))
-	{
-	uint32_t data=pmem_read(pc, 4);
+	uint32_t data=pmem_read(addr, 4);
 	#ifdef  CONFIG_MTRACE
-	if(flag == 1)
-	{
-	 	read_buf[read_num]=ad;
+	 	read_buf[read_num]=addr;
   		read_num++;
-	}
 	#endif
 	return (int) data; 
 	}
 	printf("read\n");
-	out_of_bound(ad);
+	out_of_bound(addr);
+	return 0;
+}
+
+extern "C" int vlg_pc_read(int ad)
+{
+	uint32_t pc=(uint32_t)ad;
+	if(likely(check_mem(pc)))
+	{
+	uint32_t data=pmem_read(pc, 4);
+	return (int) data; 
+	}
+	printf("pc_read\n");
+	out_of_bound(pc);
 	return 0;
 }
 
@@ -123,19 +127,20 @@ void pmem_write(uint32_t &ad, int len, uint32_t data)
 //pmem_write in mem.v
 extern "C" void vlg_pmem_write(int ad,int wdata,int len)
 {
-	uint32_t pc=(uint32_t)ad;
-	if(likely(check_mem(ad)))
+	uint32_t addr=(uint32_t)ad;
+
+	if(likely(check_mem(addr)))
 	{
 	uint32_t data=(uint32_t)wdata;
 	#ifdef CONFIG_MTRACE
-	write_buf[write_num]=ad;
+	write_buf[write_num]=addr;
 	write_num++;
 	#endif
-	pmem_write(pc,len,data);
+	pmem_write(addr,len,data);
 	return ;
 	}
 	printf("write\n");
-	out_of_bound(ad);
+	out_of_bound(addr);
 }
 
 uint8_t* NPC_guest_to_host(uint32_t paddr) { return pmem + paddr - 0x80000000; }

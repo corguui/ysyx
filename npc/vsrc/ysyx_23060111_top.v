@@ -56,7 +56,7 @@ ysyx_23060111_IDU init_IDU (inst,opcode,rd,funct3,rs1,rs2,funct7,imm,inv_flag);
 ysyx_23060111_EXU init_EXU (inst,rout1,rout2,pc,dnpc,opcode,rd,funct3,rs1,rs2,funct7,imm,wdata,waddr,raddr1,raddr2,snpc,wen,m_waddr,m_wdata,m_wmask,m_wen,m_raddr,m_ren,m_rdata);
 
 //init mem read and write
-ysyx_23060111_mem init_the_mem (clk,m_waddr,m_wdata,m_wmask,m_wen,m_raddr,m_ren,m_rdata);
+ysyx_23060111_mem init_mem (clk,m_waddr,m_wdata,m_wmask,m_wen,m_raddr,m_ren,m_rdata);
 
 
 

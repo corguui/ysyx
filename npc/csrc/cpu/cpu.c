@@ -1,3 +1,4 @@
+#include "Vysyx_23060111_top__Dpi.h"
 #include "config.h"
 #include <cpu/cpu.h>
 #include <cpu/decode.h>
@@ -66,7 +67,7 @@ static void trace_and_difftest(Decode *_this) {
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   #ifdef CONFIG_DIFFTEST 
   //compare with the nemu
-  difftest_step(_this->pc, top->rootp->ysyx_23060111_top__DOT__dnpc);
+  difftest_step(_this->pc, top->pc);
   #endif
 
 //watchpoint

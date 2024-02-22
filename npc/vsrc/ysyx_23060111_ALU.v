@@ -17,7 +17,7 @@ module ysyx_23060111_ALU(
     output reg m_wen,
     output reg [31:0] m_raddr,
     output reg m_ren,
-    output [31:0] m_rdata
+    input [31:0] m_rdata
 
 );
 
@@ -35,12 +35,14 @@ assign cond_bgeu = rout1 >= rout2;
 assign src1 = rout1;
 assign src2 = rout2;
 
-always @(inst) 
+always @(inst or m_rdata) 
 begin
     case(opcode)
     //R
     7'b0110011:begin
         dnpc=snpc;
+        m_ren=1'b0;
+        m_wen=1'b0;
         case(funct3)
             //ADD or SUB
             3'b000:begin
@@ -75,8 +77,9 @@ begin
                 wen=1'b1;
              end
              else
+             //SRA
              begin
-                wdata = src1 >>> src2[4:0]; //maybe error 
+                wdata = $signed(src1) >>> src2[4:0]; //maybe error 
                 wen=1'b1;
              end
             end
@@ -96,6 +99,8 @@ begin
     //I
     7'b0010011:begin
         dnpc=snpc;
+        m_ren=1'b0;
+        m_wen=1'b0;
         case(funct3)
             //ADDI 
             3'b000:begin
@@ -130,8 +135,9 @@ begin
                 wen=1'b1;
              end
              else
+             //SRAI
              begin
-                wdata = src1 >>> imm[4:0]; //maybe error 
+                wdata = $signed(src1) >>> imm[4:0]; //maybe error 
                 wen=1'b1;
              end
             end
@@ -151,6 +157,7 @@ begin
     //IL
     7'b0000011:begin
         dnpc=snpc;
+        m_wen=1'b0;
         case(funct3)
         //LB
         3'b000:begin
@@ -163,14 +170,14 @@ begin
         3'b001:begin
            m_ren=1'b1;
            m_raddr = src1 + imm;
-           wdata = $signed({{16{m_rdata[7]}},m_rdata[15:0]});
+           wdata = $signed({{16{m_rdata[15]}},m_rdata[15:0]});
            wen=1'b1;
         end
         //LW
         3'b010:begin
            m_ren=1'b1;
            m_raddr = src1 + imm;
-           wdata = $signed(m_rdata);
+           wdata = $signed(m_rdata);            
            wen=1'b1;
         end
         //LBU
@@ -188,8 +195,8 @@ begin
            wen=1'b1;
         end
         default:begin
-             wdata=32'b0;
-             wen=1'b1;
+            wdata=32'b0;
+            wen=1'b0;
         end
         endcase
     end
@@ -198,6 +205,8 @@ begin
     //S
     7'b0100011:begin
         dnpc=snpc;
+        wen=1'b0;
+        m_ren=1'b0;
         case(funct3)
         //SB
         3'b000:begin
@@ -223,13 +232,16 @@ begin
 
         default:begin
             wdata=32'b0;
-            wen=1'b1;
+            wen=1'b0;
         end
         endcase
     end
 
     //B
     7'b1100011:begin
+        m_ren=1'b0;
+        m_wen=1'b0;
+        wen=1'b0;
         case(funct3)
         //beq
         3'b000:begin
@@ -257,7 +269,7 @@ begin
         end
         default:begin
             wdata=32'b0;
-            wen=1'b1;
+            wen=1'b0;
             dnpc=snpc;
         end
         endcase
@@ -265,6 +277,8 @@ begin
     
     //J jal
     7'b1101111:begin
+            m_wen=1'b0;
+            m_ren=1'b0; 
 	        wdata=snpc;
             wen=1'b1;
 	        dnpc=pc+imm;
@@ -272,6 +286,8 @@ begin
     
     //JR jalr
 	7'b1100111:begin
+            m_wen=1'b0;
+            m_ren=1'b0;
 	        wdata=snpc;
             wen=1'b1;
 	        dnpc=imm+src1;
@@ -279,6 +295,8 @@ begin
 
     //U lui
     7'b0110111:begin
+            m_wen=1'b0;
+            m_ren=1'b0;
 	        wdata=imm;
             wen=1'b1;
 	        dnpc=snpc;
@@ -286,6 +304,8 @@ begin
 
     //UPC auipc
 	7'b0010111:begin
+            m_wen=1'b0;
+            m_ren=1'b0;
  	        wdata=pc+imm;
             wen=1'b1;
 	        dnpc=snpc;	
@@ -293,7 +313,7 @@ begin
 
     default:begin
         wdata=32'b0;
-        wen=1'b1;
+        wen=1'b0;
         dnpc=snpc;
     end
     endcase
