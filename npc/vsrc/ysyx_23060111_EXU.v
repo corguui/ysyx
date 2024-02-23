@@ -1,5 +1,4 @@
 module ysyx_23060111_EXU(
-  input[31:0] inst,
   input[31:0] rout1,
   input[31:0] rout2,
   input [31:0] pc,
@@ -12,9 +11,9 @@ module ysyx_23060111_EXU(
   input[31:25] funct7,
   input[31:0] imm,
   output reg [31:0] wdata,
-  output[4:0] waddr,
-  output[4:0] raddr1,
-  output[4:0] raddr2,
+  output [4:0] waddr,
+  output [4:0] raddr1,
+  output [4:0] raddr2,
   input [31:0] snpc,
   output  wen,
   output [31:0] m_waddr,
@@ -32,7 +31,7 @@ module ysyx_23060111_EXU(
   assign raddr2=rs2[24:20]; //src2
 
 
-ysyx_23060111_ALU ALU_init (inst,opcode,funct3,funct7,imm,rout1,rout2,pc,snpc,dnpc,wen,wdata,m_waddr,m_wdata,m_wmask,m_wen,m_raddr,m_ren,m_rdata);
+ysyx_23060111_ALU ALU_init (opcode,funct3,funct7,imm,rout1,rout2,pc,snpc,dnpc,wen,wdata,m_waddr,m_wdata,m_wmask,m_wen,m_raddr,m_ren,m_rdata);
 
 
 /*

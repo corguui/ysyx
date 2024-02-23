@@ -23,7 +23,7 @@ end
   assign rs2=inst[24:20];
   assign funct7=inst[31:25];
 
-
+//imm 
 ysyx_23060111_MuxKeyWithDefault #(10, 7, 33) typeMux ({imm,inv_flag}, opcode ,{32'b0,1'b1} , {
    // the invalid_flags = 1'b1 means Can't find the type
     7'b0010111, {inst[31:12],12'b0,1'b0}, //auipc   type:UPC   

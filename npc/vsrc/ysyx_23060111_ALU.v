@@ -1,5 +1,4 @@
 module ysyx_23060111_ALU(
-    input [31:0] inst,
     input [6:0] opcode,
     input [14:12] funct3,
     input [31:25] funct7,
@@ -35,7 +34,8 @@ assign cond_bgeu = rout1 >= rout2;
 assign src1 = rout1;
 assign src2 = rout2;
 
-always @(inst or m_rdata) 
+
+always @(*) 
 begin
     case(opcode)
     //R
@@ -195,6 +195,8 @@ begin
            wen=1'b1;
         end
         default:begin
+            m_ren=1'b0;
+            m_raddr=32'b0;
             wdata=32'b0;
             wen=1'b0;
         end
@@ -231,6 +233,7 @@ begin
         end
 
         default:begin
+            m_wen=1'b0;
             wdata=32'b0;
             wen=1'b0;
         end
@@ -312,6 +315,8 @@ begin
 	end
 
     default:begin
+        m_ren=1'b0;
+        m_wen=1'b0;
         wdata=32'b0;
         wen=1'b0;
         dnpc=snpc;

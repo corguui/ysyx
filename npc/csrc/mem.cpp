@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <cstdint>
 #include<stdio.h>
 #include<string.h>
 #include<unistd.h>
@@ -12,6 +13,8 @@ unsigned int read_buf[100000000];
 int write_num=0;
 int read_num=0;
 #endif
+
+uint32_t data_buf;
 
 static long load_img();
 static uint8_t pmem[0x8000000] __attribute((aligned(4096)))={};
@@ -58,11 +61,12 @@ static void out_of_bound(uint32_t addr)
 	#endif
 	tfp->close();
 	assert(0);
+
 }
 //check mem if out_of_bond will excute the fun out_of_bond
 static inline bool check_mem(uint32_t addr)
 {
-	return addr-0x80000000<0x80000000;
+	return (addr>=0x80000000&&addr<0x87ffffff);
 }
 
 
@@ -93,7 +97,11 @@ extern "C" int vlg_pmem_read(int ad)
 	 	read_buf[read_num]=addr;
   		read_num++;
 	#endif
+	data_buf = data;
 	return (int) data; 
+	}
+	else {
+		return 0;
 	}
 	printf("read\n");
 	out_of_bound(addr);
