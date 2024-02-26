@@ -46,7 +46,7 @@ LIB = $(HOME)/ysyx-workbench/nemu/build/riscv32-nemu-interpreter-so
 VLTFLAGS +=  -CFLAGS -L$(LIB_PATH) -CFLAGS -lriscv32-nemu-interpreter-so
 RUN_FLAGS += $(LIB)
 NPC_SIM_RUN := LD_PRELOAD=/usr/lib/gcc/x86_64-linux-gnu/11/libasan.so $(NPC_SIM_RUN)
-NPC_GDB_RUN := -ex 'set env LD_PRELOAD /usr/lib/gcc/x86_64-linux-gnu/11/libasan.so' 
+NPC_GDB_DIFF = -ex 'set env LD_PRELOAD /usr/lib/gcc/x86_64-linux-gnu/11/libasan.so' 
 endif
 #gdb
 NPC_GDB = -CFLAGS -g 
@@ -69,7 +69,7 @@ sim:$(Vfile) $(Cfile) $(TOPfile)
 
 gdb:$(Vfile) $(Cfile) $(TOPfile) 
 	verilator $(VLTFLAGS) $(NPC_GDB) 
-	gdb $(NPC_GDB_RUN) $(RUN_FLAGS)
+	gdb $(NPC_GDB_DIFF) --args $(NPC_GDB_RUN) $(RUN_FLAGS)
 	@ctags -R -u
 
 wave:$(Wavefile)
