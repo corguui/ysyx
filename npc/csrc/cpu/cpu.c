@@ -15,7 +15,7 @@ extern "C" void disassemble(char *str, int size, uint64_t pc, uint8_t *code,int 
 #include <monitor.h>
 extern FUN *symbol;
 extern int func_num;
-int space_num=-1;
+int space_num=0;
 int space_flat=0;
 int print_flat=0;
 #endif
@@ -102,13 +102,13 @@ void cpu_exec_once(VerilatedVcdC* tfp,Decode *s)
 		top->clk =0; top->eval();
 		s->pc=top->pc;
 		s->inst=top->rootp->ysyx_23060111_top__DOT__inst;
+    	s->dnpc=top->rootp->ysyx_23060111_top__DOT__dnpc;
 		tfp->dump(main_time);
 		main_time++;
 		top->eval();
 		top->clk =1; top->eval();
 		tfp->dump(main_time);
 		main_time++;
-    	s->dnpc=top->rootp->ysyx_23060111_top__DOT__dnpc;
 		top->eval();
 
 
@@ -156,6 +156,7 @@ void cpu_exec_once(VerilatedVcdC* tfp,Decode *s)
   memset(q, ' ', fspace_len);
   q += fspace_len;
   disassemble(q, s->funbuf + sizeof(s->funbuf) - q,s->pc, (uint8_t *)&s->inst, funlen);
+
 if(strncmp(s->funbuf+24,ar,3)==0)
  {
  	int flat_ret=0;
@@ -171,7 +172,7 @@ if(strncmp(s->funbuf+24,ar,3)==0)
 		       if(s->pc>=symbol[f].value&&s->pc<symbol[f].size+symbol[f].value)	
 		       {
 		          flat_ret=1;
-			  break;
+			      break;
 		       }
 		   }
 		   }

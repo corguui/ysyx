@@ -46,10 +46,6 @@ void init_mode()
 //get the files
 void parse_args(int argc,char **argv)
 {
-    for(int i=0;i<argc;i++)
-    {
-        printf("%s\n",argv[i]);
-    }
     int elf_flat=0;
     img_file=argv[1];
     log_file=argv[2];
