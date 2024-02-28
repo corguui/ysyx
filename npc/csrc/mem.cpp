@@ -1,3 +1,5 @@
+#include "debug.h"
+#include "utils.h"
 #include <assert.h>
 #include <cstdint>
 #include<stdio.h>
@@ -10,11 +12,12 @@
 //memory tarce
 unsigned int write_buf[100000000];
 unsigned int read_buf[100000000];
+unsigned int write_data_buf[100000000];
+unsigned int read_data_buf[100000000];
 int write_num=0;
 int read_num=0;
 #endif
 
-uint32_t data_buf;
 
 static long load_img();
 static uint8_t pmem[0x8000000] __attribute((aligned(4096)))={};
@@ -51,12 +54,12 @@ static void out_of_bound(uint32_t addr)
 		log_write("----------write----------\n");
 		for(int i=0;i<write_num;i++)
   		{
-  			log_write("----  0x%x\n",write_buf[i]);
+  			log_write("----addr  0x%x   ----data  0x%x\n",write_buf[i],write_data_buf[i]);
   		}
   		log_write("--------  read  ---------\n");
   		for(int i=0;i<read_num;i++)
   		{
-  			log_write("----  0x%x\n",read_buf[i]);
+  			log_write("----addr  0x%x   ----data  0x%x\n",read_buf[i],read_data_buf[i]);
   		}
 	#endif
 	tfp->close();
@@ -95,9 +98,9 @@ extern "C" int vlg_pmem_read(int ad)
 	uint32_t data=pmem_read(addr, 4);
 	#ifdef  CONFIG_MTRACE
 	 	read_buf[read_num]=addr;
+		read_data_buf[read_num]=data;
   		read_num++;
 	#endif
-	data_buf = data;
 	return (int) data; 
 	}
 	else {
@@ -142,6 +145,7 @@ extern "C" void vlg_pmem_write(int ad,int wdata,int len)
 	uint32_t data=(uint32_t)wdata;
 	#ifdef CONFIG_MTRACE
 	write_buf[write_num]=addr;
+	write_data_buf[write_num]=data;
 	write_num++;
 	#endif
 	pmem_write(addr,len,data);
@@ -180,12 +184,12 @@ void pmem_out()
 		log_write("----------write----------\n");
 		for(int i=0;i<write_num;i++)
   		{
-  			log_write("----  0x%x\n",write_buf[i]);
+  			log_write("----addr  0x%x   ----data  0x%x\n",write_buf[i],write_data_buf[i]);
   		}
   		log_write("--------  read  ---------\n");
   		for(int i=0;i<read_num;i++)
   		{
-  			log_write("----  0x%x\n",read_buf[i]);
+  			log_write("----addr  0x%x   ----data  0x%x\n",read_buf[i],read_data_buf[i]);
   		}
 		#else 
 		printf("don't open the mtrace");
