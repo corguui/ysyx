@@ -2,6 +2,7 @@
 #include <klib.h>
 #include <klib-macros.h>
 #include <stdarg.h>
+#include <stdint.h>
 
 #if !defined(__ISA_NATIVE__) || defined(__NATIVE_USE_KLIB__)
 
@@ -63,13 +64,95 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
 			     	out[len]=sr[i];
 				len++;
 			     }
+			    break;
+				case 'c':
+				char ch= (char)va_arg(ap,int);
+				out[len]=ch;
+				len++;
+				break;
+				case 'X':
+				unsigned int hex;
+				int hval=va_arg(ap,int); 
+				out[len]='0';
+				len++;
+				out[len]='X';
+				len++;
+			    if(hval==0)
+			    {out[len]='0';
+			     len++;
+			     break;}
+			    else
+			    {
+				 hex=(unsigned int)hval;
+				}
+			     int u;
+			     char q[1024];
+			     int qlen=0;
+			     while(hex>0)
+			     {
+					u=hex%16;
+			     	if(u>=10)
+					{
+					q[qlen]=55+u;
+					}
+					else
+					{
+					q[qlen]=48+u;
+					}
+					hex=hex/16;
+					qlen++;
+			     }
+			     for(int i=qlen-1;i>=0;i--)
+			     {
+			       out[len]=q[i];
+			       len++;
+			     }
 			     break;
+				case 'x':
+				unsigned int hexx;
+				int hxval=va_arg(ap,int); 
+				out[len]='0';
+				len++;
+				out[len]='x';
+				len++;
+			    if(hxval==0)
+			    {out[len]='0';
+			     len++;
+			     break;}
+			    else
+			    {
+				 hexx=(unsigned int)hxval;
+				}
+			     int f;
+			     char x[1024];
+			     int xlen=0;
+			     while(hexx>0)
+			     {
+					f=hexx%16;
+			     	if(f>=10)
+					{
+					x[xlen]=87+f;
+					}
+					else
+					{
+					x[xlen]=48+f;
+					}
+					hexx=hexx/16;
+					xlen++;
+			     }
+			     for(int i=xlen-1;i>=0;i--)
+			     {
+			       out[len]=x[i];
+			       len++;
+			     }
+			     break;
+
 			}
 			break;
 			case '\n':
-			  out[len]='\n';
-			  len++;
-			  break;
+			out[len]='\n';
+			len++;
+			break;
 			default:
 			  out[len]=*fmt;
 			  len++;
