@@ -22,14 +22,39 @@ int printf(const char *fmt, ...) {
 }
 int vsprintf(char *out, const char *fmt, va_list ap) {
 	int len=0;
+	int Out_num=0;
 	while(*fmt!='\0')
 	{
 		switch(*fmt)
 		{
 			case '%':
-			  fmt++;
+			fmt++;
+			if(*fmt=='0')
+			{
+			int a=1;
+			int count=0;
+			int k=0;
+			char out_buf[20];
+			fmt++;
+			while(*fmt<='9'&&*fmt>'0')
+			{
+					out_buf[count]=*fmt;
+					count++;
+					a=a*10;
+					fmt++;
+			}
+			while(count>0)
+			{
+				a=a/10;
+				Out_num=Out_num+(out_buf[k]-48)*a;
+				k++;
+				count--;
+			}
+			}
+
 			switch(*fmt)
 			{
+			  	
 			  case 'd':
 			    int val=va_arg(ap,int); 
 			    if(val==0)
@@ -45,11 +70,19 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
 			     int plen=0;
 			     while(val>0)
 			     {
-			     	r=val%10;
-				val=val/10;
-				p[plen]=48+r;
-				plen++;
+			     r=val%10;
+				 val=val/10;
+				 p[plen]=48+r;
+				 plen++;
 			     }
+				 if((plen-1)<Out_num)
+				 {
+					for(int y=0;y<=(Out_num-plen);y++)
+					{
+					out[len]='0';
+					len++;
+					}
+				 }
 			     for(int i=plen-1;i>=0;i--)
 			     {
 			       out[len]=p[i];
@@ -73,10 +106,6 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
 				case 'X':
 				unsigned int hex;
 				int hval=va_arg(ap,int); 
-				out[len]='0';
-				len++;
-				out[len]='X';
-				len++;
 			    if(hval==0)
 			    {out[len]='0';
 			     len++;
@@ -102,6 +131,14 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
 					hex=hex/16;
 					qlen++;
 			     }
+				 if((qlen-1)<Out_num)
+				 {
+					for(int y=0;y<=(Out_num-qlen);y++)
+					{
+					out[len]='0';
+					len++;
+					}
+				 }
 			     for(int i=qlen-1;i>=0;i--)
 			     {
 			       out[len]=q[i];
@@ -111,10 +148,6 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
 				case 'x':
 				unsigned int hexx;
 				int hxval=va_arg(ap,int); 
-				out[len]='0';
-				len++;
-				out[len]='x';
-				len++;
 			    if(hxval==0)
 			    {out[len]='0';
 			     len++;
@@ -140,6 +173,14 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
 					hexx=hexx/16;
 					xlen++;
 			     }
+				 if((xlen-1)<Out_num)
+				 {
+					for(int y=0;y<=(Out_num-xlen);y++)
+					{
+					out[len]='0';
+					len++;
+					}
+				 }				 
 			     for(int i=xlen-1;i>=0;i--)
 			     {
 			       out[len]=x[i];
@@ -149,6 +190,7 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
 
 			}
 			break;
+
 			case '\n':
 			out[len]='\n';
 			len++;
