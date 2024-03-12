@@ -29,10 +29,11 @@
 
 #ifdef CONFIG_FTRACE
 #include "../monitor/monitor.h"
-extern FUN fun_buff[128];
-extern int fun_num;
+extern FUN *symbol;
+extern int func_num;
 int space_num=-1;
 int space_flat=0;
+int print_flat=0;
 #endif
 
 //ringbuf val
@@ -53,6 +54,9 @@ void device_update();
 static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 #ifdef CONFIG_ITRACE_COND
   if (ITRACE_COND) { log_write("%s\n", _this->logbuf); }
+#endif
+#ifdef CONFIG_FTRACE
+  if (CONFIG_FTRACE&&print_flat==1) { print_flat=0; log_write("%s\n", _this->fun_printf_buf); }
 #endif
   if (g_print_step) { IFDEF(CONFIG_ITRACE, puts(_this->logbuf)); }
   IFDEF(CONFIG_DIFFTEST, difftest_step(_this->pc, dnpc));
@@ -79,6 +83,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
   char ar2[]="00 00 80 67";//funbuf 0x8--------: 00 00 80 67 jalr  ..... the ret is 80 67
   //00 07 80 67 jr mean call to but no printf the ret//in f1 have jr call to f0 the f1 no ret
   char *q = s->funbuf;
+  char *pr= s->fun_printf_buf;
   q += snprintf(q, sizeof(s->funbuf), FMT_WORD ":", s->pc);
   int funlen = s->snpc - s->pc;
   int j;
@@ -113,16 +118,16 @@ if(pc!=0x80000000)
  {
  	int flat_ret=0;
 	int f,g;
- 	for(g=0;g<fun_num;g++)
+ 	for(g=0;g<func_num;g++)
 	{
 		
-		if(s->dnpc>=fun_buff[g].value&&s->dnpc<fun_buff[g].value+fun_buff[g].size)//read the next pc
+		if(s->dnpc>=symbol[g].value&&s->dnpc<symbol[g].value+symbol[g].size)//read the next pc
 		{
 		   if(strncmp(s->funbuf+24,ar1,4)==0&&strncmp(s->funbuf+12,ar2,5)==0)//ret or not ret 
 		   {
-		   for(f=0;f<fun_num;f++)
+		   for(f=0;f<func_num;f++)
 		   {
-		       if(s->pc>=fun_buff[f].value&&s->pc<fun_buff[f].size+fun_buff[f].value)	
+		       if(s->pc>=symbol[f].value&&s->pc<symbol[f].size+symbol[f].value)	
 		       {
 		          flat_ret=1;
 			  break;
@@ -135,9 +140,10 @@ if(pc!=0x80000000)
 		     {
 		     	space_num--;
 		     }
-		     printf("0x%x:",s->pc);
-		     printf("---num: %d   ret [fun:%s  @%x]\n",space_num,fun_buff[f].name,fun_buff[f].value); 
+		     pr+=sprintf(pr,"0x%x:",s->pc);
+		     pr+=sprintf(pr,"---num: %d   ret [fun:%s  @%x]\n",space_num,symbol[f].name,symbol[f].value); 
 		     space_flat=1;
+         print_flat=1;
 		     break;
 		   }
 		   else if(flat_ret==0)//call
@@ -146,13 +152,14 @@ if(pc!=0x80000000)
 		     {
 		     	space_num++;
 		     }
-		     printf("0x%x:",s->pc);
-		     printf("---num: %d  call [fun:%s  @%x]\n",space_num,fun_buff[g].name,fun_buff[g].value);
+		     pr+=sprintf(pr,"0x%x:",s->pc);
+		     pr+=sprintf(pr,"---num: %d  call [fun:%s  @%x]\n",space_num,symbol[g].name,symbol[g].value);
 			space_flat=0;
+      print_flat=1;
 			break;
 		   }
 		}
-		else if(g==fun_num-1)
+		else if(g==func_num-1)
 		{
 			printf("error no funcion\nsrc/cpu/cpu-exec.c:158:error\n");
 			

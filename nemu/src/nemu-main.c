@@ -31,6 +31,9 @@ void init_monitor(int, char *[]);
 void am_init_monitor();
 void engine_start();
 int is_exit_status_bad();
+#ifdef CONFIG_MTRACE
+void pmem_out();
+#endif
 
 word_t expr(char *e,bool *success);
 
@@ -69,5 +72,9 @@ int main(int argc, char *argv[]) {
   memset(buf,'\0',sizeof(buf));
   }
   */
+  #ifdef CONFIG_MTRACE
+	//print the mem read and write  ---logfile
+	pmem_out();
+	#endif
   return is_exit_status_bad();
 }

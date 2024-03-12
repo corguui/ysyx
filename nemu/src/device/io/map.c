@@ -13,6 +13,8 @@
 * See the Mulan PSL v2 for more details.
 ***************************************************************************************/
 
+#include "common.h"
+#include "utils.h"
 #include <isa.h>
 #include <memory/host.h>
 #include <memory/vaddr.h>
@@ -52,12 +54,28 @@ void init_map() {
   p_space = io_space;
 }
 
+#ifdef CONFIG_DTRACE
+void Dtrace_read(paddr_t addr,word_t ret, int len, IOMap *map)
+{
+    log_write("dtrace read: device %s read 0x%x at 0x%x  len is %d\n",map->name,ret,addr,len);
+}
+
+void Dtrace_write(paddr_t addr, int len, word_t data, IOMap *map)
+{
+    log_write("dtrace write: device %s write 0x%x at 0x%x  len is %d\n",map->name,data,addr,len);
+}
+#endif
+
+
 word_t map_read(paddr_t addr, int len, IOMap *map) {
   assert(len >= 1 && len <= 8);
   check_bound(map, addr);
   paddr_t offset = addr - map->low;
   invoke_callback(map->callback, offset, len, false); // prepare data to read
   word_t ret = host_read(map->space + offset, len);
+  #ifdef CONFIG_DTRACE
+  Dtrace_read(addr,ret,len,map);
+  #endif
   return ret;
 }
 
@@ -67,4 +85,7 @@ void map_write(paddr_t addr, int len, word_t data, IOMap *map) {
   paddr_t offset = addr - map->low;
   host_write(map->space + offset, len, data);
   invoke_callback(map->callback, offset, len, true);
+  #ifdef CONFIG_DTRACE
+  Dtrace_write(addr,len,data,map);
+  #endif
 }

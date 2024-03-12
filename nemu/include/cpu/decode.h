@@ -25,6 +25,7 @@ typedef struct Decode {
   ISADecodeInfo isa;
   IFDEF(CONFIG_ITRACE, char logbuf[128]);
   IFDEF(CONFIG_FTRACE, char funbuf[128]);
+  IFDEF(CONFIG_FTRACE, char fun_printf_buf[256]);
 } Decode;
 
 // --- pattern matching mechanism ---

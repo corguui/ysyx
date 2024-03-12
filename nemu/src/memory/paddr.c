@@ -22,6 +22,8 @@
 //memory tarce
 unsigned int write_buf[100000000];
 unsigned int read_buf[100000000];
+unsigned int write_data_buf[100000000];
+unsigned int read_data_buf[100000000];
 int write_num=0;
 int read_num=0;
 #endif
@@ -45,21 +47,6 @@ static void pmem_write(paddr_t addr, int len, word_t data) {
 }
 
 static void out_of_bound(paddr_t addr) {
-#ifdef CONFIG_MTRACE
-  printf("--------  write  --------\n");
-  for(int i=0;i<write_num;i++)
-  {
-  	if(i>=CONFIG_MTRACE_WRITE_START&&i<=CONFIG_MTRACE_WRITE_END)
-  	printf("----  %x\n",write_buf[i]);
-  }
-  printf("--------  read  ---------\n");
-  for(int i=0;i<read_num;i++)
-  {
-	if(i>=CONFIG_MTRACE_READ_START&&i<=CONFIG_MTRACE_READ_END)
-  	printf("----  %x\n",read_buf[i]);
-  }
-#endif
-
   panic("address = " FMT_PADDR " is out of bound of pmem [" FMT_PADDR ", " FMT_PADDR "] at pc = " FMT_WORD,
       addr, PMEM_LEFT, PMEM_RIGHT, cpu.pc);
 }
@@ -81,11 +68,13 @@ void init_mem() {
 
 word_t paddr_read(paddr_t addr, int len) {
   if (likely(in_pmem(addr))){
+    uint32_t data=pmem_read(addr, len);
 #ifdef CONFIG_MTRACE
   read_buf[read_num]=addr;
+  read_data_buf[read_num]=data;
   read_num++;
 #endif
-  return pmem_read(addr, len);
+  return data;
   }
   IFDEF(CONFIG_DEVICE, return mmio_read(addr, len));
   printf("read\n");
@@ -97,10 +86,27 @@ void paddr_write(paddr_t addr, int len, word_t data) {
   if (likely(in_pmem(addr))) { pmem_write(addr, len, data);
 #ifdef CONFIG_MTRACE
 	write_buf[write_num]=addr;
+  write_data_buf[write_num]=data;
 	write_num++;
 #endif
   return; }
   IFDEF(CONFIG_DEVICE, mmio_write(addr, len, data); return);
   printf("write\n");
   out_of_bound(addr);
+}
+
+void pmem_out()
+{
+		#ifdef CONFIG_MTRACE
+		log_write("----------write----------\n");
+		for(int i=0;i<write_num;i++)
+  		{
+  			log_write("----addr  0x%x   ----data  0x%x\n",write_buf[i],write_data_buf[i]);
+  		}
+  		log_write("--------  read  ---------\n");
+  		for(int i=0;i<read_num;i++)
+  		{
+  			log_write("----addr  0x%x   ----data  0x%x\n",read_buf[i],read_data_buf[i]);
+  		}
+		#endif
 }
