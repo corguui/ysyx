@@ -167,7 +167,7 @@ void init_monitor(int argc, char *argv[]) {
   init_sdb();
 
 #ifndef CONFIG_ISA_loongarch32r
-  IFDEF(CONFIG_ITRACE, init_disasm(
+  IFDEF(CONFIG_TRACE_DISASM, init_disasm(
     MUXDEF(CONFIG_ISA_x86,     "i686",
     MUXDEF(CONFIG_ISA_mips32,  "mipsel",
     MUXDEF(CONFIG_ISA_riscv,
