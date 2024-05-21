@@ -6,7 +6,6 @@
 #include<string.h>
 #include<unistd.h>
 #include<mem.h>
-#include<cpu/cpu.h>
 
 #ifdef CONFIG_MTRACE
 //memory tarce
@@ -73,29 +72,41 @@ static inline bool check_mem(uint32_t addr)
 }
 
 
+uint8_t* guest_to_host(uint32_t paddr) {return pmem+paddr-0x80000000;}
+
+
+uint32_t pmem_read(uint32_t addr,int len)
+{
+	uint32_t ret = host_read(guest_to_host(addr),len);
+	return ret;
+}
+void pmem_write(paddr_t addr, int len, word_t data) {
+  host_write(guest_to_host(addr), len, data);
+}
+
+
 uint32_t pc_read(uint32_t &pc)
 {
 	uint32_t val=pmem_read(pc,4);
 	return val;
 }
-uint32_t pmem_read(uint32_t &ad,int len)
+uint32_t host_read(void* addr,int len)
 {
-    uint8_t *addr =pmem+ad-0x80000000;
 	switch(len){
 	case 1: return *(uint8_t *)addr;
 	case 2: return *(uint16_t *)addr;
 	case 4: return *(uint32_t *)addr;
 	default:
-	{ assert(0); printf("pmem_read error\n");   return 0;}
+	{ printf("pmem_read error\n"); assert(0);    return 0;}
 	}
 }
 //pmem read in mem.v
-extern "C" int vlg_pmem_read(int ad)
+extern "C" int vlg_pmem_read(int ad,int len)
 {
 	uint32_t addr=(uint32_t)ad;
 	if(likely(check_mem(addr)))
 	{
-	uint32_t data=pmem_read(addr, 4);
+	uint32_t data=pmem_read(addr, len);
 	#ifdef  CONFIG_MTRACE
 	 	read_buf[read_num]=addr;
 		read_data_buf[read_num]=data;
@@ -104,6 +115,9 @@ extern "C" int vlg_pmem_read(int ad)
 	return (int) data; 
 	}
 	else {
+	#ifdef CONFIG_DEVICE
+		return mmio_read(addr,4);
+	#endif
 		return 0;
 	}
 	printf("read\n");
@@ -124,9 +138,10 @@ extern "C" int vlg_pc_read(int ad)
 	return 0;
 }
 
-void pmem_write(uint32_t &ad, int len, uint32_t data)
+
+
+void host_write(void* addr, int len, uint32_t data)
 {
-  	uint8_t *addr =pmem+ad-0x80000000;
   	switch (len) {
           case 1: *(uint8_t  *)addr = data; return;
     	  case 2: *(uint16_t *)addr = data; return;
@@ -151,6 +166,10 @@ extern "C" void vlg_pmem_write(int ad,int wdata,int len)
 	pmem_write(addr,len,data);
 	return ;
 	}
+	#ifdef CONFIG_DEVICE
+	uint32_t data=(uint32_t)wdata;
+		return mmio_write(addr,len,data);
+	#endif
 	printf("write\n");
 	out_of_bound(addr);
 }

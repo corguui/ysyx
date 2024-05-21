@@ -21,7 +21,7 @@ extern "C" {
     // DPI import at vsrc/ysyx_23060111_IFU.v:1:29
     extern int vlg_pc_read(int pc);
     // DPI import at vsrc/ysyx_23060111_mem.v:1:29
-    extern int vlg_pmem_read(int m_raddr);
+    extern int vlg_pmem_read(int m_raddr, int rmask);
     // DPI import at vsrc/ysyx_23060111_mem.v:2:30
     extern void vlg_pmem_write(int waddr, int wdata, int wmask);
 

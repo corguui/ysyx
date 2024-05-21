@@ -15,6 +15,7 @@ module ysyx_23060111_ALU(
     output reg [31:0] m_wmask,
     output reg m_wen,
     output reg [31:0] m_raddr,
+    output reg [31:0] m_rmask,
     output reg m_ren,
     input [31:0] m_rdata
 
@@ -163,6 +164,7 @@ begin
         3'b000:begin
            m_ren=1'b1;
            m_raddr = src1 + imm;
+           m_rmask =32'd1;
            wdata = $signed({{24{m_rdata[7]}},m_rdata[7:0]});
            wen=1'b1;
         end
@@ -170,6 +172,7 @@ begin
         3'b001:begin
            m_ren=1'b1;
            m_raddr = src1 + imm;
+           m_rmask =32'd2;
            wdata = $signed({{16{m_rdata[15]}},m_rdata[15:0]});
            wen=1'b1;
         end
@@ -177,6 +180,7 @@ begin
         3'b010:begin
            m_ren=1'b1;
            m_raddr = src1 + imm;
+           m_rmask =32'd4;
            wdata = $signed(m_rdata);            
            wen=1'b1;
         end
@@ -184,6 +188,7 @@ begin
         3'b100:begin
            m_ren=1'b1;
            m_raddr = src1 + imm;
+           m_rmask =32'd1;
            wdata = {24'b0,m_rdata[7:0]};
            wen=1'b1;
         end
@@ -191,6 +196,7 @@ begin
         3'b101:begin
            m_ren=1'b1; 
            m_raddr = src1 + imm;
+           m_rmask = 32'd2;
            wdata = {16'b0,m_rdata[15:0]};
            wen=1'b1;
         end

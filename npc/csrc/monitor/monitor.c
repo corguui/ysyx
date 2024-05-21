@@ -5,6 +5,7 @@
 void init_mem();
 void init_log(char * log_file);
 void init_sdb();
+void init_device();
 void cpu_init();
 void sdb_set_batch_mode();
 
@@ -70,6 +71,10 @@ void init_monitor() {
 
     cpu_init();
 
+    #ifdef CONFIG_DEVICE
+    init_device();
+    #endif
+    
     #ifdef CONFIG_DIFFTEST
     if(diff_so_file!=NULL)
     {
@@ -88,6 +93,8 @@ void init_monitor() {
     #ifdef CONFIG_FTRACE
     elf_read(elf_file);
     #endif
+
+
 }
 
 //elf_file handle
