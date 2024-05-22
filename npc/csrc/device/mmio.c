@@ -15,8 +15,8 @@ static IOMap* fetch_mmio_map(paddr_t addr) {
 
 static void report_mmio_overlap(const char *name1, paddr_t l1, paddr_t r1,
     const char *name2, paddr_t l2, paddr_t r2) {
-        log_write("MMIO region %s@[" FMT_PADDR ", " FMT_PADDR "] is overlapped "
-               "with %s@[" FMT_PADDR ", " FMT_PADDR "]", name1, l1, r1, name2, l2, r2);
+        log_write("MMIO region %s@[ 0x%08X , 0x%08X ] is overlapped "
+               "with %s@[ 0x%08X , 0x%08X ]", name1, l1, r1, name2, l2, r2);
         assert(0);
 }
 
@@ -35,7 +35,7 @@ void add_mmio_map(const char *name, paddr_t addr, void *space, uint32_t len, io_
 
   maps[nr_map] = (IOMap){ .name = name, .low = addr, .high = addr + len - 1,
     .space = space, .callback = callback };
-  Log("Add mmio map '%s' at [" FMT_PADDR ", " FMT_PADDR "]",
+  Log("Add mmio map '%s' at [ 0x%08X , 0x%08X ]",
       maps[nr_map].name, maps[nr_map].low, maps[nr_map].high);
 
   nr_map ++;

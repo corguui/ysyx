@@ -1,5 +1,6 @@
 #include "utils.h"
 #include <cstdint>
+#include <cstdio>
 #include <device/map.h>
 #include <mem.h>
 
