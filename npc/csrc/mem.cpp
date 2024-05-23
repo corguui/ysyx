@@ -1,3 +1,4 @@
+#include "config.h"
 #include "debug.h"
 #include "utils.h"
 #include <assert.h>
@@ -103,7 +104,6 @@ uint32_t host_read(void* addr,int len)
 //pmem read in mem.v
 extern "C" int vlg_pmem_read(int ad,int len)
 {
-	printf("%x %d\n",ad,len);
 	uint32_t addr=(uint32_t)ad;
 	if(likely(check_mem(addr)))
 	{
@@ -115,12 +115,13 @@ extern "C" int vlg_pmem_read(int ad,int len)
 	#endif
 	return (int) data; 
 	}
-	else {
+	else if(addr == CONFIG_RTC_MMIO || addr ==CONFIG_RTC_MMIO+4) {
 	#ifdef CONFIG_DEVICE
 		return mmio_read(addr,len);
 	#endif
-		return 0;
+
 	}
+	return 0;
 	printf("read\n");
 	out_of_bound(addr);
 	return 0;

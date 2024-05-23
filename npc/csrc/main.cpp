@@ -24,11 +24,11 @@ int main(int argc ,char** argv, char** env)
 	contextp = new VerilatedContext;
 	contextp->commandArgs(argc,argv);
 	top = new Vysyx_23060111_top{contextp};
-	contextp->traceEverOn(true);
-	tfp=new VerilatedVcdC;
+	///contextp->traceEverOn(true);
+	///tfp=new VerilatedVcdC;
 
-	top->trace(tfp,0);
-	tfp->open("wave.vcd");
+	///top->trace(tfp,0);
+	///tfp->open("wave.vcd");
 
 	//init mode
 	init_mode();
@@ -39,7 +39,7 @@ int main(int argc ,char** argv, char** env)
 	//(npc)   command
 	sdb_mainloop();
 
-	tfp->close();
+	///tfp->close();
 	delete contextp;
 	#ifdef CONFIG_MTRACE
 	//print the mem read and write  ---logfile
