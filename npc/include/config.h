@@ -3,6 +3,7 @@
 
 #define CONFIG_MODE 1
 //0 --batch 1 --log  
+//#define CONFIG_VCD 1
 //#define CONFIG_CC_WATCHPOINT 1
 //#define CONFIG_ITRACE 1
 //#define CONFIG_IQUEUE 1
