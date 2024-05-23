@@ -20,6 +20,7 @@ int space_flat=0;
 int print_flat=0;
 #endif
 
+void device_update();
 
 //ringbuf val
 #ifdef CONFIG_ITRACE
@@ -220,6 +221,9 @@ static void execute(uint64_t n)
 		cpu_exec_once(tfp,&s);
 		trace_and_difftest(&s); 
 		if(npc_state.state !=NPC_RUNNING) break;
+		#ifdef CONFIG_DEVICE
+		device_update();
+		#endif
 	}
 }
 

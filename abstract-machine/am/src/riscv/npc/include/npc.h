@@ -1,5 +1,6 @@
 #ifndef NPC_H__
 #define NPC_H__
+#include "../../riscv.h"
 
 # define DEVICE_BASE 0xa0000000
 #define MMIO_BASE 0xa0000000

@@ -10,6 +10,9 @@ void set_npc_state(int state,int halt_ret);
 void invalid_inst();
 #define INV() invalid_inst()
 
+// ----------- timer -----------
+
+uint64_t get_time();
 
 // ----------- state -----------
 

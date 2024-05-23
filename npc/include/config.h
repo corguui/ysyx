@@ -12,8 +12,9 @@
 //#define CONFIG_DIFFTEST 1
 //#define CONFIG_MTRACE 1
 #define CONFIG_SERIAL_MMIO 0xa00003f8
+#define CONFIG_RTC_MMIO 0xa0000048
 #define CONFIG_DEVICE 1
 #define CONFIG_HAS_SERIAL 1 //串口
-
+#define CONFIG_HAS_TIMER 1 //时钟
 #endif
 
