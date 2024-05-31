@@ -182,6 +182,12 @@ void init_monitor(int argc, char *argv[]) {
 
  #ifdef CONFIG_FTRACE
   elf_read(elf_file);
+  /*
+  for(int i=0;i<=func_num;i++)
+  {
+    printf("%s\n",symbol[i].name);
+  }
+  */
   #endif
 
 
