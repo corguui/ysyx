@@ -50,6 +50,13 @@ word_t isa_reg_str2val(const char *s, bool *success) {
   return 0;
 }
 
+void isa_csr_display(){
+  printf("$mepc      --> 0x%x \n",cpu.csr.mepc);
+  printf("$mcause    --> 0x%x \n",cpu.csr.mcause);
+  printf("$mstatus   --> 0x%x \n",cpu.csr.mstatus);
+  printf("$mtvec     --> 0x%x \n",cpu.csr.mtvec);
+}
+
 vaddr_t* csr_reg(word_t imm)
 {
   switch (imm) 
