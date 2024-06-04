@@ -135,13 +135,18 @@ config TRACE
   bool "Enable tracer"
   default y
 
-config TRACE_START
+config TRACE_SCOPE
   depends on TRACE
+  bool "enable the TRACE_START and TRACE_END (uint: number of instructions)"
+  default y
+
+config TRACE_START
+  depends on TRACE_SCOPE
   int "When tracing is enabled (unit: number of instructions)"
   default 0
 
 config TRACE_END
-  depends on TRACE
+  depends on TRACE_SCOPE
   int "When tracing is disabled (unit: number of instructions)"
   default 10000
 
