@@ -21,11 +21,13 @@ word_t isa_raise_intr(word_t NO, vaddr_t epc) {
    * Then return the address of the interrupt/exception vector.
    */
   cpu.csr.mepc=epc;
+ #ifdef CONFIG_DIFFTEST
   cpu.csr.mcause=0xb;
-  printf("%x\r\n",NO);
-  #ifdef CONFIG_DIFFTEST
-  printf("the isa intr.c isa_raise_intr error fix the mcause=NO or in isa riscv32 difftest dut.c let it pass the 0xb\n ");
-  #endif
+  cpu.csr.mstatus=0x1800;
+  //mret 导致mstatus变成0x1880 
+ #else
+  cpu.csr.mcause=NO; 
+ #endif
   return cpu.csr.mtvec;
 }
 

@@ -32,6 +32,8 @@ void isa_reg_display() {
 	{
 	printf("$%3s --> 0x%x \n",regs[i],cpu.gpr[i]);
 	}
+  isa_csr_display();
+  
 }
 
 word_t isa_reg_str2val(const char *s, bool *success) {
@@ -46,6 +48,19 @@ word_t isa_reg_str2val(const char *s, bool *success) {
       return cpu.gpr[i];
     }
   }
+  if (!strcmp(s, "$mstatus")) {
+    return cpu.csr.mstatus;
+  }
+  if (!strcmp(s, "$mepc")) {
+    return cpu.csr.mepc;
+  }
+  if (!strcmp(s, "$mcause")) {
+    return cpu.csr.mcause;
+  }
+  if (!strcmp(s, "$mtvec")) {
+    return cpu.csr.mtvec;
+  }
+
   *success = true;
   return 0;
 }

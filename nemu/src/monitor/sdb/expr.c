@@ -190,7 +190,7 @@ int tokens_len = nr_token;
 	    if(flat)
 	    {
 	        sprintf(tokens[i].str,"0x%x",tmp);
-		tokens[i].type=HEX;
+		    tokens[i].type=HEX;
 	//	int_to_char(tmp, tokens[i].str); // transfrom the str --> $egx
 	    }
 	    else
