@@ -48,6 +48,8 @@ __am_asm_trap:
   csrr t1, mstatus
   csrr t2, mepc
 
+  addi t2,t2,4  #使mepc跳过yield  ecall, 保存的是自陷指令的PC, 因此软件需要在适当的地方对保存的PC加上4, 使得将来返回到自陷指令的下一条指令.
+
   STORE t0, OFFSET_CAUSE(sp)
   STORE t1, OFFSET_STATUS(sp)
   STORE t2, OFFSET_EPC(sp)

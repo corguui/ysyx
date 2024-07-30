@@ -14,14 +14,6 @@ struct Context {
 
 #endif
 
-//#define GPR2 gpr[0]  //a0   //[0]
-//#define GPR3 gpr[0]
-//#define GPR4 gpr[0]
-#define GPR0 gpr[10] // a2   //[0]
-#define GPR3 gpr[13] // a3
-#define GPR4 gpr[14] // a4
-#define GPR5 gpr[15] // a5
-#define GPR6 gpr[16] // a6
-#define GPRx gpr[0]
+
 
 #endif
