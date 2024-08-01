@@ -8,6 +8,7 @@ module ysyx_23060111_IDU(
   output [24:20] rs2,
   output [31:25] funct7,
   output [31:0] imm,
+  output [31:0] csr_imm,//ecall csrrw csrr
   output inv_flag
 
  );
@@ -22,6 +23,7 @@ end
   assign rs1=inst[19:15];
   assign rs2=inst[24:20];
   assign funct7=inst[31:25];
+  assign csr_imm={{20{inst[31]}},inst[31:20]};
 
 //imm 
 ysyx_23060111_MuxKeyWithDefault #(10, 7, 33) typeMux ({imm,inv_flag}, opcode ,{32'b0,1'b1} , {

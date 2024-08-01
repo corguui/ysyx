@@ -10,6 +10,7 @@ module ysyx_23060111_EXU(
   input[24:20] rs2,
   input[31:25] funct7,
   input[31:0] imm,
+  input[31:0] csr_imm,
   output reg [31:0] wdata,
   output [4:0] waddr,
   output [4:0] raddr1,
@@ -23,16 +24,45 @@ module ysyx_23060111_EXU(
   output [31:0] m_raddr,
   output [31:0] m_rmask,
   output m_ren,
-  input [31:0] m_rdata
+  input [31:0] m_rdata,
+  input [31:0] csr_rout,
+  input [31:0] csr_a5,
+  output reg [31:0] csr_wdata,
+  output reg [1:0] csr_waddr,
+  output reg [1:0] csr_raddr,
+  input [31:0] csrr_mepc,
+  input [31:0] csrr_mtvec,
+  input [31:0] csrr_mstatus,
+  output reg [31:0] csr_mepc_wdata,
+  output reg [31:0] csr_mcause_wdata,
+  output reg [31:0] csr_mstatus_wdata,
+  output csr_mepc_wen,
+  output csr_mcause_wen,
+  output csr_mstatus_wen,
+  output csr_wen
 );
 
+  wire [1:0] csr_flag;//mret or ecall
 
   assign waddr=rd[11:7]; //R(rd)
   assign raddr1=rs1[19:15]; //src1
   assign raddr2=rs2[24:20]; //src2
+  assign csr_flag=(rs2[24:20]==5'd0)?2'd1:((rs2[24:20]==5'd2)?2'd2:2'd0);// 1---ecall  2---mret 0---ebreak
+
+  //csr
+  always @(csr_imm) begin
+		case(csr_imm)
+			32'h341: begin csr_raddr=2'd0; csr_waddr=2'd0; end//mepc
+			32'h342: begin csr_raddr=2'd1; csr_waddr=2'd1; end//mcause
+			32'h300: begin csr_raddr=2'd2; csr_waddr=2'd2; end//mstatus
+			32'h305: begin csr_raddr=2'd3; csr_waddr=2'd3; end//mtvec
+			default: begin csr_raddr=2'd0; csr_waddr=2'd0; end
+		endcase
+	
+  end
 
 
-ysyx_23060111_ALU ALU_init (opcode,funct3,funct7,imm,rout1,rout2,pc,snpc,dnpc,wen,wdata,m_waddr,m_wdata,m_wmask,m_wen,m_raddr,m_rmask,m_ren,m_rdata);
+ysyx_23060111_ALU ALU_init (opcode,funct3,funct7,imm,rout1,rout2,csr_a5,csrr_mepc,csrr_mstatus,csrr_mtvec,csr_rout,pc,snpc,dnpc,wen,csr_wen,csr_mepc_wen,csr_mcause_wen,csr_mstatus_wen,csr_mepc_wdata,csr_mcause_wdata,csr_mstatus_wdata,wdata,csr_wdata,m_waddr,m_wdata,m_wmask,m_wen,m_raddr,m_rmask,m_ren,csr_flag,m_rdata);
 
 
 /*
