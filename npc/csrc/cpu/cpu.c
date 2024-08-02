@@ -90,7 +90,13 @@ static void trace_and_difftest(Decode *_this) {
 
 void cpu_init()
 {
+	top->clk =0; top->eval();
 	top->rst=1;
+	top->clk =1; top->eval();
+	#ifdef CONFIG_VCD
+	tfp->dump(main_time);
+	#endif
+	main_time++;
 	top->clk =0; top->eval();
 	#ifdef CONFIG_VCD
 	tfp->dump(main_time);

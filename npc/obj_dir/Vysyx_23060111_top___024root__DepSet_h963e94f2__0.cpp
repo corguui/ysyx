@@ -7,17 +7,10 @@
 
 #include "Vysyx_23060111_top___024root.h"
 
-void Vysyx_23060111_top___024root___act_sequent__TOP__0(Vysyx_23060111_top___024root* vlSelf);
-
 void Vysyx_23060111_top___024root___eval_act(Vysyx_23060111_top___024root* vlSelf) {
     if (false && vlSelf) {}  // Prevent unused
     Vysyx_23060111_top__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vysyx_23060111_top___024root___eval_act\n"); );
-    // Body
-    if (vlSelf->__VactTriggered.at(0U)) {
-        Vysyx_23060111_top___024root___act_sequent__TOP__0(vlSelf);
-        vlSelf->__Vm_traceActivity[1U] = 1U;
-    }
 }
 
 void Vysyx_23060111_top___024root___nba_sequent__TOP__0(Vysyx_23060111_top___024root* vlSelf);
@@ -29,13 +22,16 @@ void Vysyx_23060111_top___024root___eval_nba(Vysyx_23060111_top___024root* vlSel
     Vysyx_23060111_top__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vysyx_23060111_top___024root___eval_nba\n"); );
     // Body
-    if (vlSelf->__VnbaTriggered.at(2U)) {
+    if (vlSelf->__VnbaTriggered.at(0U)) {
         Vysyx_23060111_top___024root___nba_sequent__TOP__0(vlSelf);
+        vlSelf->__Vm_traceActivity[1U] = 1U;
     }
     if (vlSelf->__VnbaTriggered.at(1U)) {
         Vysyx_23060111_top___024root___nba_sequent__TOP__1(vlSelf);
-        vlSelf->__Vm_traceActivity[2U] = 1U;
+    }
+    if (vlSelf->__VnbaTriggered.at(0U)) {
         Vysyx_23060111_top___024root___nba_sequent__TOP__2(vlSelf);
+        vlSelf->__Vm_traceActivity[2U] = 1U;
     }
 }
 
@@ -52,7 +48,7 @@ void Vysyx_23060111_top___024root___eval(Vysyx_23060111_top___024root* vlSelf) {
     Vysyx_23060111_top__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vysyx_23060111_top___024root___eval\n"); );
     // Init
-    VlTriggerVec<3> __VpreTriggered;
+    VlTriggerVec<2> __VpreTriggered;
     IData/*31:0*/ __VnbaIterCount;
     CData/*0:0*/ __VnbaContinue;
     // Body
