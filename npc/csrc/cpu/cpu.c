@@ -42,6 +42,10 @@ void cpu_read_reg()
 	{
 		cpu.gpr[i]=top->rootp->ysyx_23060111_top__DOT__reg___0240__DOT__rf[i];
 	}
+	for(int i=0;i<4;i++)
+	{
+		cpu.csr[i]=top->rootp->ysyx_23060111_top__DOT__reg___0240__DOT__csr[i];
+	}
 
 }
 void cpu_write_reg()

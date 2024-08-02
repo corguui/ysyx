@@ -130,6 +130,10 @@ extern "C" int vlg_pmem_read(int ad,int len)
 extern "C" int vlg_pc_read(int ad)
 {
 	uint32_t pc=(uint32_t)ad;
+	if(pc==0)
+	{
+		pc=0x80000000;
+	}
 	if(likely(check_mem(pc)))
 	{
 	uint32_t data=pmem_read(pc, 4);

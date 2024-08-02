@@ -18,6 +18,10 @@ void isa_reg_display() {
 	//printf("$%3s --> 0x%x \n", regs[i],top->rootp->ysyx_23060111_top__DOT__reg___0240__DOT__rf[i]);
   printf("$%3s --> 0x%x \n", regs[i],cpu.gpr[i]);
 	}
+  printf ("$mepc --> 0x%x \n",cpu.csr[0]);
+  printf("$mcause --> 0x%x \n",cpu.csr[1]);
+  printf("$mstatus --> 0x%x \n",cpu.csr[2]);
+  printf("$mtvec --> 0x%x \n",cpu.csr[3]);
 }
 
 uint32_t isa_reg_str2val(const char *s, bool *success) {
@@ -36,6 +40,18 @@ uint32_t isa_reg_str2val(const char *s, bool *success) {
       //return top->rootp->ysyx_23060111_top__DOT__reg___0240__DOT__rf[i];
       return cpu.gpr[i];
     }
+  }
+  if (!strcmp(s, "$mepc")) {
+    return cpu.csr[0];
+  }
+  if (!strcmp(s, "$mcause")) {
+    return cpu.csr[1];
+  }
+  if (!strcmp(s, "$mstatus")) {
+    return cpu.csr[2];
+  }
+  if (!strcmp(s, "$mtvec")) {
+    return cpu.csr[3];
   }
   *success = true;
   return 0;

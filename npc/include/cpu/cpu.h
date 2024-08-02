@@ -13,6 +13,7 @@
                          
 typedef struct {
   uint32_t gpr[MUXDEF(CONFIG_RVE, 16, 32)];
+  uint32_t csr[4];
   uint32_t pc;
 } NPC_CPU_state;
 

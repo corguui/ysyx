@@ -42,6 +42,10 @@ wire cond_bgeu;
 wire [31:0] src1;
 wire [31:0] src2;
 wire [31:0] csr;
+wire [31:0] shifted_mstatus;
+wire [31:0] mstatus;
+assign shifted_mstatus=((csrr_mstatus&32'h00000080)>>4)|32'h00000080;
+assign mstatus=csrr_mstatus|shifted_mstatus;
 
 assign cond_beq = (rout1==rout2);
 assign cond_bge = ($signed(rout1) >= $signed(rout2));
@@ -359,10 +363,10 @@ begin
                 //ecall
                 if(csr_flag==2'd1)
                 begin
-                csr_mcause_wdata=csr_a5;
                 csr_mcause_wen=1'b1;
-                csr_mepc_wdata=pc;
                 csr_mepc_wen=1'b1;
+                csr_mcause_wdata=csr_a5;
+                csr_mepc_wdata=pc;
                 csr_mstatus_wen=1'b0;
                 csr_wen=1'b0;
                 dnpc=csrr_mtvec;
@@ -371,7 +375,7 @@ begin
                 //mret
                 else if(csr_flag==2'd0)
                 begin
-                csr_mstatus_wdata =32'h00001880;
+                csr_mstatus_wdata =mstatus;//32'h00001880;
                 csr_mstatus_wen=1'b1;
                 csr_mepc_wen=1'b0;
                 csr_mcause_wen=1'b0;

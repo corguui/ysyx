@@ -47,7 +47,7 @@ module ysyx_23060111_EXU(
   assign waddr=rd[11:7]; //R(rd)
   assign raddr1=rs1[19:15]; //src1
   assign raddr2=rs2[24:20]; //src2
-  assign csr_flag=(rs2[24:20]==5'd0)?2'd1:((rs2[24:20]==5'd2)?2'd2:2'd0);// 1---ecall  2---mret 0---ebreak
+  assign csr_flag=(opcode[6:0]==7'b1110011)?(rs2[24:20]==5'd0)?2'd1:((rs2[24:20]==5'd2)?2'd2:2'd0):2'd0;// 1---ecall  2---mret 0---ebreak
 
   //csr
   always @(csr_imm) begin
