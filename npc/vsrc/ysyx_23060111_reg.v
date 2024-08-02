@@ -4,9 +4,9 @@ module ysyx_23060111_reg #(ADDR_WIDTH = 1, DATA_WIDTH = 1) (
   input [ADDR_WIDTH-1:0] waddr,
   input [1:0] csr_waddr,
   input [DATA_WIDTH-1:0] csr_wdata,
-  input [ADDR_WIDTH-1:0] csr_mcause_wdata,
-  input [ADDR_WIDTH-1:0] csr_mepc_wdata,
-  input [ADDR_WIDTH-1:0] csr_mstatus_wdata,
+  input [DATA_WIDTH-1:0] csr_mcause_wdata,
+  input [DATA_WIDTH-1:0] csr_mepc_wdata,
+  input [DATA_WIDTH-1:0] csr_mstatus_wdata,
   input [1:0] csr_raddr,
   input [ADDR_WIDTH-1:0] raddr1,
   input [ADDR_WIDTH-1:0] raddr2,
@@ -58,4 +58,16 @@ module ysyx_23060111_reg #(ADDR_WIDTH = 1, DATA_WIDTH = 1) (
        csr[2] <= csr_mstatus_wdata;
     end
   end
+  /*
+  always @(csr_mcause_wen) begin
+      if (csr_mcause_wen!=0)begin
+      csr[1] = csr_mcause_wdata;
+    end
+  end
+   always @(csr_mepc_wen) begin
+      if(csr_mepc_wen!=0)begin
+      csr[0] = csr_mepc_wdata;
+      end
+  end
+  */
 endmodule

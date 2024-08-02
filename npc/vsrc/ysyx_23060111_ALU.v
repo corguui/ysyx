@@ -213,8 +213,8 @@ begin
            m_ren=1'b1;
            m_raddr = src1 + imm;
            m_rmask =32'd4;
-           wdata = $signed(m_rdata);            
            wen=1'b1;
+           wdata = $signed(m_rdata);            
         end
         //LBU
         3'b100:begin
@@ -337,38 +337,38 @@ begin
         case(funct3)
             //csrrw
             3'b001:begin
+            csr_mepc_wen=1'b0;
+            csr_mcause_wen=1'b0;
+            csr_mstatus_wen=1'b0;
             dnpc=snpc;
             wdata=csr;
             wen=1'b1;
             csr_wdata=src1;
             csr_wen=1'b1;
-            csr_mepc_wen=1'b0;
-            csr_mcause_wen=1'b0;
-            csr_mstatus_wen=1'b0;
 
             end
             //csrrs
             3'b010:begin
+            csr_mepc_wen=1'b0;
+            csr_mcause_wen=1'b0;
+            csr_mstatus_wen=1'b0;
             dnpc=snpc;
             wdata=csr;
             wen=1'b1;
             csr_wdata=src1|csr;
             csr_wen=1'b1;
-            csr_mepc_wen=1'b0;
-            csr_mcause_wen=1'b0;
-            csr_mstatus_wen=1'b0;
 
             end
             3'b000:begin
                 //ecall
                 if(csr_flag==2'd1)
                 begin
+                csr_wen=1'b0;
                 csr_mcause_wen=1'b1;
                 csr_mepc_wen=1'b1;
-                csr_mcause_wdata=csr_a5;
+                csr_mcause_wdata=(csr_a5==32'hffffffff)?32'h0:csr_a5;
                 csr_mepc_wdata=pc;
                 csr_mstatus_wen=1'b0;
-                csr_wen=1'b0;
                 dnpc=csrr_mtvec;
 
                 end

@@ -23,7 +23,7 @@ f(30) f(31)
 #define NR_REGS 32
 #else
 #define REGS_HI16(f)
-#define NR_REGS 16
+#define NR_REGS 16 
 #endif
 
 #define REGS(f) REGS_LO16(f) REGS_HI16(f)
@@ -61,6 +61,7 @@ __am_asm_trap:
 
   LOAD t1, OFFSET_STATUS(sp)
   LOAD t2, OFFSET_EPC(sp)
+  #lw t2,136(sp)
   csrw mstatus, t1
   csrw mepc, t2
 

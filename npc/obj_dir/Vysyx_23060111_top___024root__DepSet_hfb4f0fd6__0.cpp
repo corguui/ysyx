@@ -84,17 +84,17 @@ VL_INLINE_OPT void Vysyx_23060111_top___024root___nba_sequent__TOP__0(Vysyx_2306
     }
     if (vlSelf->ysyx_23060111_top__DOT__csr_mcause_wen) {
         __Vdlyvval__ysyx_23060111_top__DOT__reg___0240__DOT__csr__v1 
-            = (0x1fU & vlSelf->ysyx_23060111_top__DOT__csr_mcause_wdata);
+            = vlSelf->ysyx_23060111_top__DOT__csr_mcause_wdata;
         __Vdlyvset__ysyx_23060111_top__DOT__reg___0240__DOT__csr__v1 = 1U;
     }
     if (vlSelf->ysyx_23060111_top__DOT__csr_mepc_wen) {
         __Vdlyvval__ysyx_23060111_top__DOT__reg___0240__DOT__csr__v2 
-            = (0x1fU & vlSelf->ysyx_23060111_top__DOT__csr_mepc_wdata);
+            = vlSelf->ysyx_23060111_top__DOT__csr_mepc_wdata;
         __Vdlyvset__ysyx_23060111_top__DOT__reg___0240__DOT__csr__v2 = 1U;
     }
     if (vlSelf->ysyx_23060111_top__DOT__csr_mstatus_wen) {
         __Vdlyvval__ysyx_23060111_top__DOT__reg___0240__DOT__csr__v3 
-            = (0x1fU & vlSelf->ysyx_23060111_top__DOT__csr_mstatus_wdata);
+            = vlSelf->ysyx_23060111_top__DOT__csr_mstatus_wdata;
         __Vdlyvset__ysyx_23060111_top__DOT__reg___0240__DOT__csr__v3 = 1U;
     }
     if (((IData)(vlSelf->ysyx_23060111_top__DOT__wen) 
@@ -274,10 +274,14 @@ VL_INLINE_OPT void Vysyx_23060111_top___024root___nba_sequent__TOP__2(Vysyx_2306
                                       << 1U);
     vlSelf->ysyx_23060111_top__DOT__init_EXU__DOT__csr_flag 
         = ((0x73U == (0x7fU & vlSelf->ysyx_23060111_top__DOT__inst))
-            ? ((0U == (0x1fU & (vlSelf->ysyx_23060111_top__DOT__inst 
-                                >> 0x14U))) ? 1U : 
-               ((2U == (0x1fU & (vlSelf->ysyx_23060111_top__DOT__inst 
-                                 >> 0x14U))) ? 2U : 0U))
+            ? ((0U == (3U & (vlSelf->ysyx_23060111_top__DOT__inst 
+                             >> 0x14U))) ? 1U : ((3U 
+                                                  == 
+                                                  (3U 
+                                                   & (vlSelf->ysyx_23060111_top__DOT__inst 
+                                                      >> 0x14U)))
+                                                  ? 2U
+                                                  : 0U))
             : 0U);
     vlSelf->ysyx_23060111_top__DOT__rout2 = vlSelf->ysyx_23060111_top__DOT__reg___0240__DOT__rf
         [(0x1fU & (vlSelf->ysyx_23060111_top__DOT__inst 
@@ -777,12 +781,18 @@ VL_INLINE_OPT void Vysyx_23060111_top___024root___nba_sequent__TOP__2(Vysyx_2306
                                                >> 0xcU)))) {
                                             if ((1U 
                                                  == (IData)(vlSelf->ysyx_23060111_top__DOT__init_EXU__DOT__csr_flag))) {
-                                                vlSelf->ysyx_23060111_top__DOT__csr_mepc_wdata 
-                                                    = vlSelf->pc;
                                                 vlSelf->ysyx_23060111_top__DOT__csr_mcause_wdata 
                                                     = 
-                                                    vlSelf->ysyx_23060111_top__DOT__reg___0240__DOT__rf
-                                                    [0xfU];
+                                                    ((0xffffffffU 
+                                                      == 
+                                                      vlSelf->ysyx_23060111_top__DOT__reg___0240__DOT__rf
+                                                      [0xfU])
+                                                      ? 0U
+                                                      : 
+                                                     vlSelf->ysyx_23060111_top__DOT__reg___0240__DOT__rf
+                                                     [0xfU]);
+                                                vlSelf->ysyx_23060111_top__DOT__csr_mepc_wdata 
+                                                    = vlSelf->pc;
                                             }
                                             if ((1U 
                                                  != (IData)(vlSelf->ysyx_23060111_top__DOT__init_EXU__DOT__csr_flag))) {

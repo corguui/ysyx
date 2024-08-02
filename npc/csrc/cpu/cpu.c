@@ -110,6 +110,7 @@ void cpu_init()
 	#endif
 	main_time++;
 	top->eval();
+	top->rootp->ysyx_23060111_top__DOT__reg___0240__DOT__csr[2]=0x1800;
 
 	
 }
